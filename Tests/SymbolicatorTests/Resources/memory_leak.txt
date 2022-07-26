@@ -1,0 +1,27 @@
+Process:         MemoryLeakingApp [14968]
+Path:            /Users/berik/Library/Developer/CoreSimulator/Devices/B2C43E91-5A2B-471E-8CC6-4EBD9427F528/data/Containers/Bundle/Application/BD51F757-C40F-4ECF-A657-BD0C02ABD778/MemoryLeakingApp.app/MemoryLeakingApp
+Load Address:    0x10ae33000
+Identifier:      MemoryLeakingApp
+Version:         ???
+Code Type:       X86-64
+Platform:        iOS Simulator
+Parent Process:  launchd_sim [12679]
+
+Date/Time:       2022-07-26 12:11:47.963 +0400
+Launch Time:     2022-07-25 19:25:29.886 +0400
+OS Version:      iPhone OS 15.5 (19F70)
+Report Version:  7
+Analysis Tool:   /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/usr/bin/leaks
+Analysis Tool Version:  iOS Simulator 15.5 (19F70)
+
+Physical footprint:         49.2M
+Physical footprint (peak):  49.2M
+----
+
+leaks Report Version: 4.0
+Process 14968: 32077 nodes malloced for 6030 KB
+Process 14968: 2 leaks for 64 total leaked bytes.
+
+    2 (64 bytes) << TOTAL >>
+      1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001431a40> [32]
+      1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001440440> [32]
