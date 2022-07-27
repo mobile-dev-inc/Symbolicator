@@ -9,7 +9,13 @@ struct Symbolicator: ParsableCommand {
     var inputFileArgument: String
     
     mutating func run() throws {
-        print("Mobile.dev!")
+        print("Symbolicator, arguments:")
+        print("   \(dsymArgument)")
+        print("   \(inputFileArgument)")
+        
+//        guard FileManager().fileExists(atPath: dsymArgument) else {
+//            throw ValidationError("Dsym file not found")
+//        }
         
         let inputData: Data
         if inputFileArgument == "-" {
@@ -21,14 +27,20 @@ struct Symbolicator: ParsableCommand {
             inputData = buffer
         } else {
             let url = URL(fileURLWithPath: inputFileArgument)
+            guard FileManager().fileExists(atPath: inputFileArgument) else {
+                throw ValidationError("Input file not found at \(inputFileArgument)")
+            }
+            
+            
             inputData = try Data(contentsOf: url)
         }
 
-        guard FileManager().fileExists(atPath: dsymArgument) else {
-            throw ValidationError("")
-        }
-        
-        print(inputData)
+
+        parse(inputData)
+    }
+    
+    func parse(_ data: Data) {
+        print(MemoryLeakParser(data: data).parse())
     }
 }
 

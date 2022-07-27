@@ -42,8 +42,8 @@ final class SymbolicatorTests: XCTestCase {
     func testExample() throws {
         try runProcess { process in
             process.arguments = [
-                TestResounces().memoryLeakUrl.path,
                 TestResounces().dsymUrl.path,
+                TestResounces().memoryLeakUrl.path,
             ]
         } test: { output, error in
             XCTAssertEqual(output, "")
