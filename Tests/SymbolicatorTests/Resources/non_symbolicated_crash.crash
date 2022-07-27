@@ -1,0 +1,182 @@
+Process:               ReportCrash [31152]
+Path:                  /System/Library/CoreServices/ReportCrash
+Identifier:            ReportCrash
+Version:               ???
+Code Type:             X86-64 (Native)
+Parent Process:        launchd [1]
+User ID:               0
+
+Date/Time:             2022-07-13 17:26:42.017 +02:00
+OS Version:            macOS 12.3 (21E230)
+Report Version:        12
+Anonymous UUID:        57CBC8AB-DAD3-2A6E-DD47-D7B50E78F8EF
+
+Sleep/Wake UUID:       8488CB7D-4492-4BF5-9737-BDEAE0789720
+
+Time Awake Since Boot: 140000 seconds
+
+System Integrity Protection: enabled
+
+Crashed Thread:        1
+
+Exception Type:        EXC_BAD_ACCESS (SIGSEGV)
+Exception Codes:       KERN_INVALID_ADDRESS at 0x000000012bb9b008
+Exception Note:        EXC_CORPSE_NOTIFY
+
+Termination Reason:    Namespace SIGNAL, Code 0xb
+Terminating Process:   exc handler [31152]
+
+VM Region Info: 0x12bb9b008 is not in any region.  Bytes after previous region: 272777225  Bytes before following region: 123140345352184
+      REGION TYPE                    START - END         [ VSIZE] PRT/MAX SHRMOD  REGION DETAIL
+      VM_ALLOCATE (reserved)      11b774000-11b777000    [   12K] r--/r-- SM=NUL  ...(unallocated)
+--->  GAP OF 0x6ffee8cd1000 BYTES
+      Stack Guard              700004448000-700004449000 [    4K] ---/rwx SM=NUL  
+
+Application Specific Information:
+Pid 33594 'CovidCertificate' CORPSE: Extracting
+Completed 1, Recent: Pid 30872 'ReportCrash' CORPSE
+
+Thread 0:: Dispatch queue: com.apple.main-thread
+0   libsystem_kernel.dylib            0x00007ff8187dd97a mach_msg_trap + 10
+1   libsystem_kernel.dylib            0x00007ff8187ddce8 mach_msg + 56
+2   com.apple.CoreFoundation          0x00007ff8188e0cdd __CFRunLoopServiceMachPort + 319
+3   com.apple.CoreFoundation          0x00007ff8188df368 __CFRunLoopRun + 1276
+4   com.apple.CoreFoundation          0x00007ff8188de7ac CFRunLoopRunSpecific + 562
+5   com.apple.Foundation              0x00007ff819732d9a -[NSRunLoop(NSRunLoop) runMode:beforeDate:] + 216
+6   com.apple.Foundation              0x00007ff8197bd8d7 -[NSRunLoop(NSRunLoop) run] + 76
+7   ReportCrash                       0x000000010b8d9514 0x10b8b8000 + 136468
+8   dyld                              0x000000011b6c451e start + 462
+
+Thread 1 Crashed:
+0   libdyld.dylib                     0x00007ff818822859 dyld4::Atlas::Mapper::mapperForSharedCache(char const*, DRL::UUID const&, void const*) + 649
+1   libdyld.dylib                     0x00007ff8188245c6 dyld4::Atlas::SharedCache::createForTask(unsigned int, int*) + 694
+2   libdyld.dylib                     0x00007ff8188257a0 dyld4::Atlas::ProcessSnapshot::ProcessSnapshot(unsigned int, int*) + 22
+3   libdyld.dylib                     0x00007ff818825770 dyld4::UniquePtr<dyld4::Atlas::ProcessSnapshot> dyld4::Allocator::makeUnique<dyld4::Atlas::ProcessSnapshot, unsigned int&, int*&>(unsigned int&, int*&) + 40
+4   libdyld.dylib                     0x00007ff81882573e dyld4::Atlas::ProcessSnapshot::createForTask(unsigned int, int*) + 62
+5   libdyld.dylib                     0x00007ff8188257e2 dyld4::Atlas::Process::createSnapshot(int*) + 16
+6   libdyld.dylib                     0x00007ff818826504 dyld_process_snapshot_create_for_process + 24
+7   ReportCrash                       0x000000010b8c0c40 0x10b8b8000 + 35904
+8   ReportCrash                       0x000000010b8c1b25 0x10b8b8000 + 39717
+9   ReportCrash                       0x000000010b8d8fa2 0x10b8b8000 + 135074
+10  ReportCrash                       0x000000010b8d92a9 0x10b8b8000 + 135849
+11  ReportCrash                       0x000000010b8d9f2e 0x10b8b8000 + 139054
+12  ReportCrash                       0x000000010b8da03c 0x10b8b8000 + 139324
+13  libsystem_kernel.dylib            0x00007ff8187e603d mach_msg_server_once + 469
+14  ReportCrash                       0x000000010b8d7622 0x10b8b8000 + 128546
+15  libsystem_pthread.dylib           0x00007ff81881a4e1 _pthread_start + 125
+16  libsystem_pthread.dylib           0x00007ff818815f6b thread_start + 15
+
+Thread 2:: ExceptionSafeThread
+0   libsystem_kernel.dylib            0x00007ff8187e03ea __psynch_cvwait + 10
+1   libsystem_pthread.dylib           0x00007ff81881aa6f _pthread_cond_wait + 1249
+2   com.apple.CoreSymbolication       0x00007ff82baf0d52 CSCppExceptionSafeThread::runloop() + 58
+3   com.apple.CoreSymbolication       0x00007ff82baf08a1 thread_runloop_init(CSCppExceptionSafeThread*) + 22
+4   libsystem_pthread.dylib           0x00007ff81881a4e1 _pthread_start + 125
+5   libsystem_pthread.dylib           0x00007ff818815f6b thread_start + 15
+
+Thread 3:
+0   libsystem_kernel.dylib            0x00007ff8187dd97a mach_msg_trap + 10
+1   libsystem_kernel.dylib            0x00007ff8187ddce8 mach_msg + 56
+2   com.apple.CoreFoundation          0x00007ff8188e0cdd __CFRunLoopServiceMachPort + 319
+3   com.apple.CoreFoundation          0x00007ff8188df368 __CFRunLoopRun + 1276
+4   com.apple.CoreFoundation          0x00007ff8188de7ac CFRunLoopRunSpecific + 562
+5   com.apple.CoreFoundation          0x00007ff81896682b CFRunLoopRun + 40
+6   com.apple.DebugSymbols            0x00007ff82ba09b78 SpotlightQueryThread(void*) + 472
+7   libsystem_pthread.dylib           0x00007ff81881a4e1 _pthread_start + 125
+8   libsystem_pthread.dylib           0x00007ff818815f6b thread_start + 15
+
+Thread 4:
+0   libsystem_pthread.dylib           0x00007ff818815f48 start_wqthread + 0
+
+Thread 5:
+0   libsystem_kernel.dylib            0x00007ff8187dd97a mach_msg_trap + 10
+1   libsystem_kernel.dylib            0x00007ff8187ddce8 mach_msg + 56
+2   libsystem_kernel.dylib            0x00007ff8187e5f7f mach_msg_server_once + 279
+3   ReportCrash                       0x000000010b8d7622 0x10b8b8000 + 128546
+4   libsystem_pthread.dylib           0x00007ff81881a4e1 _pthread_start + 125
+5   libsystem_pthread.dylib           0x00007ff818815f6b thread_start + 15
+
+Thread 1 crashed with X86 Thread State (64-bit):
+  rax: 0x000000010ba7d010  rbx: 0x0000700004542ce0  rcx: 0x00007ff8187de476  rdx: 0x0000000000000000
+  rdi: 0x0000000000000000  rsi: 0x0000000000000000  rbp: 0x0000700004546d10  rsp: 0x000070000453e820
+   r8: 0x0000000000000003   r9: 0x0000000000000000  r10: 0x0000000000040002  r11: 0x0000000000000202
+  r12: 0x0000000000000003  r13: 0x0000000000000000  r14: 0x0000000000000000  r15: 0x000000012bb9b000
+  rip: 0x00007ff818822859  rfl: 0x0000000000010246  cr2: 0x000000012bb9b008
+
+Logical CPU:     6
+Error Code:      00000004 (no mapping for user data read)
+Trap Number:     14
+
+Thread 1 instruction stream:
+  5f f3 41 0f 6f 47 08 66-0f 70 c0 4e 66 0f 7f 85  _.A.oG.f.p.Nf...
+  60 7b ff ff 4d 8b 2f 4c-03 ad 70 7b ff ff 48 ff  `{..M./L..p{..H.
+  c6 48 8d bd 80 7b ff ff-e8 6c 31 00 00 48 8b 85  .H...{...l1..H..
+  88 7b ff ff 48 8b 8d 90-7b ff ff 48 c1 e1 05 0f  .{..H...{..H....
+  28 85 60 7b ff ff 0f 11-04 08 4c 89 6c 08 10 4c  (.`{......L.l..L
+  8b ad 70 7b ff ff c7 44-08 18 ff ff ff ff eb 56  ..p{...D.......V
+ [f3]41 0f 6f 47 08 66 0f-70 c0 4e 66 0f 7f 85 60  .A.oG.f.p.Nf...`    <==
+  7b ff ff 49 8b 1f 4c 01-eb 48 ff c6 48 8d bd 80  {..I..L..H..H...
+  7b ff ff e8 11 31 00 00-48 8b 85 88 7b ff ff 48  {....1..H...{..H
+  8b 8d 90 7b ff ff 48 c1-e1 05 0f 28 85 60 7b ff  ...{..H....(.`{.
+  ff 0f 11 04 08 48 89 5c-08 10 48 8b 9d a0 7b ff  .....H.\..H...{.
+  ff 44 89 64 08 18 48 8b-b5 90 7b ff ff 48 ff c6  .D.d..H...{..H..
+
+Binary Images:
+       0x10b8b8000 -        0x10b8e4000 ReportCrash (???) <7F5481D8-A82B-351E-9906-8FBAE4EDF398> /System/Library/CoreServices/ReportCrash
+       0x11b6bf000 -        0x11b72b000 dyld (???) <DD9E80DE-FB3B-349B-96A4-46874AD34D11> /usr/lib/dyld
+    0x7ff8187dc000 -     0x7ff818814000 libsystem_kernel.dylib (???) <26A59789-B846-3ED4-96DC-8DBEF3C0C8E7> /usr/lib/system/libsystem_kernel.dylib
+    0x7ff818814000 -     0x7ff818820000 libsystem_pthread.dylib (???) <2F6C275D-7E14-3D31-A924-E1BB41D2415F> /usr/lib/system/libsystem_pthread.dylib
+    0x7ff818820000 -     0x7ff81882c000 libdyld.dylib (???) <6627654A-F427-3E04-98AC-492A1CA26FCC> /usr/lib/system/libdyld.dylib
+    0x7ff818861000 -     0x7ff818d63000 com.apple.CoreFoundation (6.9 - 1858.112) <743F0CB7-E962-3E42-8653-7BD141129561> /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation
+    0x7ff8196d3000 -     0x7ff819a8f000 com.apple.Foundation (6.9 - 1858.112) <4F8F4769-F0FC-36D8-99F9-76FC48CE9639> /System/Library/Frameworks/Foundation.framework/Versions/C/Foundation
+    0x7ff82ba08000 -     0x7ff82ba43000 com.apple.DebugSymbols (195.1 - 195.1) <1FA3DEC1-72BC-3A24-A760-0E07C2481F06> /System/Library/PrivateFrameworks/DebugSymbols.framework/Versions/A/DebugSymbols
+    0x7ff82ba43000 -     0x7ff82bb19000 com.apple.CoreSymbolication (13.3 - 64552.31) <D5B247E9-5B7C-3FDE-B88C-85D207A879C8> /System/Library/PrivateFrameworks/CoreSymbolication.framework/Versions/A/CoreSymbolication
+
+External Modification Summary:
+ Calls made by other processes targeting this process:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+ Calls made by this process:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+ Calls made by all processes on this machine:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+
+VM Region Summary:
+ReadOnly portion of Libraries: Total=837.2M resident=0K(0%) swapped_out_or_unallocated=837.2M(100%)
+Writable regions: Total=411.9M written=0K(0%) resident=0K(0%) swapped_out=0K(0%) unallocated=411.9M(100%)
+
+                                VIRTUAL   REGION 
+REGION TYPE                        SIZE    COUNT (non-coalesced) 
+===========                     =======  ======= 
+Activity Tracing                   256K        1 
+Dispatch continuations           128.0M        1 
+Kernel Alloc Once                    8K        1 
+MALLOC                           152.1M       41 
+MALLOC guard page                   24K        5 
+MALLOC_MEDIUM (reserved)         120.0M        1         reserved VM address space (unallocated)
+Mach message                        16K        1 
+Mach message (reserved)             16K        1         reserved VM address space (unallocated)
+STACK GUARD                       56.0M        6 
+Stack                             10.5M        6 
+VM_ALLOCATE                         12K        3 
+__CTF                               759        1 
+__DATA                            15.6M      258 
+__DATA_CONST                      11.3M      156 
+__DATA_DIRTY                       526K       95 
+__FONT_DATA                          4K        1 
+__LINKEDIT                       651.3M        7 
+__OBJC_RO                         82.6M        1 
+__OBJC_RW                         3200K        2 
+__TEXT                           186.0M      274 
+__UNICODE                          592K        1 
+dyld private memory               2048K        2 
+mapped file                       29.2M        4 
+shared memory                      680K        5 
+===========                     =======  ======= 
+TOTAL                              1.4G      874 
+TOTAL, minus reserved VM space     1.3G      874 
