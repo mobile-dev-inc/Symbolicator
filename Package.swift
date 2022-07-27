@@ -26,6 +26,7 @@ let package = Package(
                 .copy("Resources/memory_leak_with_stacktrace.txt"),
                 .copy("Resources/memory_leak_with_symbolicated_stacktrace.txt"),
                 .copy("Resources/MemoryLeakingApp.app.dSYM"),
+                .copy("Resources/non_symbolicated_crash.crash")
             ]),
     ]
 )
