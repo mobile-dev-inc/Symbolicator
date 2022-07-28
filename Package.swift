@@ -23,7 +23,8 @@ let package = Package(
             resources: [
                 .copy("Resources/memory_leak.txt"),
                 .copy("Resources/MemoryLeakingApp.app.dSYM"),
-                .copy("Resources/non_symbolicated_crash.crash")
+                .copy("Resources/non_symbolicated_crash.crash"),
+                .copy("Resources/crash.app.dSYM")
             ]),
     ]
 )

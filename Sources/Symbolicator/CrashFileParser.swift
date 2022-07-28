@@ -1,7 +1,7 @@
 import Foundation
 
 protocol CrashFileParsing {
-    func parse() throws
+    mutating func parse() throws -> CrashFileParserResult
 }
 
 enum CrashFileParserError: Error {
@@ -11,17 +11,20 @@ enum CrashFileParserError: Error {
 struct CrashFileParser: CrashFileParsing {
     private enum Constant {
         static let symbolicatedAppName = "ReportCrash"
+        static let dwarfFilePath = "/Contents/Resources/DWARF/"
     }
     
     private let data: Data
     private let appName: String
+    private let dsymPath: String
     
-    init(data: Data, appName: String) {
+    init(data: Data, appName: String, dsymPath: String) {
         self.data = data
         self.appName = appName
+        self.dsymPath = dsymPath
     }
     
-    func parse() throws {
+    mutating func parse() throws -> CrashFileParserResult {
         let contentsString = String(data: data,
                                     encoding: .utf8)
         
@@ -31,15 +34,56 @@ struct CrashFileParser: CrashFileParsing {
         
         let lines = contentsString.components(separatedBy: .newlines)
         
+        var thread: ThreadBlock?
+        var threads: [ThreadBlock] = []
+        
         let symbolicatedLines = lines.map { line -> String in
-            guard !line.contains(Constant.symbolicatedAppName) else {
-                return line.replacingOccurrences(of: Constant.symbolicatedAppName,
-                                                 with: appName)
+            var symbolicatedLine = line
+            
+            if line.contains(Constant.symbolicatedAppName) {
+                symbolicatedLine = line.replacingOccurrences(of: Constant.symbolicatedAppName,
+                                                             with: appName)
             }
             
-            return line
+            if symbolicatedLine ~= "^Thread" {
+                thread = ThreadBlock(header: symbolicatedLine, appName: appName)
+            } else if thread != nil && symbolicatedLine ~= "^\\d+ " {
+                if symbolicatedLine.contains(appName) {
+                    let segments = symbolicatedLine.split(separator: " ").map { String($0) }
+                    
+                    if segments.count >= 4 {
+                        let (address, loadAddress) = (segments[2],
+                                                      segments[3])
+                        
+                        do {
+                            let symbolicatedAddress = try atos("\(dsymPath)\(Constant.dwarfFilePath)\(appName)",
+                                                               arch: "x86_64",
+                                                               loadAddress: loadAddress,
+                                                               address: address)
+                            symbolicatedLine = symbolicatedLine.replacingOccurrences(of: loadAddress,
+                                                                                     with: symbolicatedAddress)
+                        } catch {
+                            // soft fail in case symbolication fails
+                            debugPrint("atos command failed with error - \(error)")
+                        }
+                        
+                        thread?.appendLine(line: symbolicatedLine)
+                    }
+                } else {
+                    thread?.appendLine(line: symbolicatedLine)
+                }
+            } else {
+                if let thread = thread, symbolicatedLine.isEmpty {
+                    threads.append(thread)
+                }
+                
+                thread = nil
+            }
+            
+            return symbolicatedLine
         }
         
-        print(symbolicatedLines)
+        return CrashFileParserResult(contents: symbolicatedLines.joined(separator: "\n"),
+                                     threads: threads)
     }
 }
