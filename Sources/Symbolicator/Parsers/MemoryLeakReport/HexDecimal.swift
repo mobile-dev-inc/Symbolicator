@@ -3,7 +3,7 @@ import Parsing
 
 struct HexDecimal: Parser {
     func parse(_ input: inout Substring) throws -> Int {
-        // Remove the 0x prefix if present
+        // Fail if the 0x is not present
         guard input.hasPrefix("0x") || input.hasPrefix("0X") else {
             throw ParsingError.expectedInput("0x", at: input)
         }
