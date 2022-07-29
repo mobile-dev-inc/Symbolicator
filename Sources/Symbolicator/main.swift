@@ -40,7 +40,7 @@ struct Symbolicator: ParsableCommand {
     }
     
     func parse(_ data: Data) {
-        print(MemoryLeakParser(data: data).parse())
+        print(MemoryLeakParser(data: data).parse()!)
     }
 }
 

@@ -21,10 +21,10 @@
     {
       "identity" : "swift-parsing",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-parsing",
+      "location" : "https://github.com/mobile-dev-inc/swift-parsing",
       "state" : {
-        "revision" : "bc92e84968990b41640214b636667f35b6e5d44c",
-        "version" : "0.10.0"
+        "revision" : "ff328806364a3d3b2f3494fb381b3e3a2d503d65",
+        "version" : "0.10.1"
       }
     },
     {

@@ -8,7 +8,8 @@ let package = Package(
     platforms: [.macOS(.v10_15)],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.0.0"),
-        .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.7.0"),
+        .package(url: "https://github.com/mobile-dev-inc/swift-parsing", from: "0.10.1"),
+//        .package(path: "/Users/berik/Code/swift-parsing")
     ],
     targets: [
         .executableTarget(
@@ -22,6 +23,8 @@ let package = Package(
             dependencies: ["Symbolicator"],
             resources: [
                 .copy("Resources/memory_leak.txt"),
+                .copy("Resources/memory_leak_with_stacktrace.txt"),
+                .copy("Resources/memory_leak_with_symbolicated_stacktrace.txt"),
                 .copy("Resources/MemoryLeakingApp.app.dSYM"),
             ]),
     ]
