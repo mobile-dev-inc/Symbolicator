@@ -1,6 +1,7 @@
 import Foundation
 import ArgumentParser
 
+@main
 struct Symbolicator: ParsableCommand {
     @Argument(help: "Dsym file")
     var dsymArgument: String
@@ -43,5 +44,3 @@ struct Symbolicator: ParsableCommand {
         print(MemoryLeakParser(data: data).parse()!)
     }
 }
-
-Symbolicator.main()
