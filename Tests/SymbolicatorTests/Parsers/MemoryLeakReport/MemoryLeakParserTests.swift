@@ -18,5 +18,10 @@ final class MemoryLeakParserTests: XCTestCase {
         let report = try memoryLeakReport(from: TestResources().memoryLeakUrl)
         XCTAssertEqual(report?.metadata["leaks Report Version"], "4.0")
     }
+    
+    func testParseLeaks() throws {
+        let report = try memoryLeakReport(from: TestResources().memoryLeakUrl)
+        XCTAssertEqual(report?.leaks.count, 1)
+        XCTAssertEqual(report?.leaks.first?.occurences.count, 2)
+    }
 }
-

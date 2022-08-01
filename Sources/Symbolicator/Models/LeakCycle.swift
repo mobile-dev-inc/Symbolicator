@@ -1,12 +1,12 @@
 import Foundation
 
 struct LeakCycle {
-    let steps: [LeakCycleStep]
+    let graph: [LeakCycleStep]
 }
 
 struct LeakCycleStep {
-    let count: Int?
-    let size: Int?
+    let accumulatedObjectCount: Int?
+    let accumulatedSize: Int?
     let description: String?
     let address: Int
 }

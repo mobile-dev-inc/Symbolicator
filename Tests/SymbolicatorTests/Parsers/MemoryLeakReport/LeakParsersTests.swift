@@ -86,10 +86,10 @@ final class CycleParseTests: XCTestCase {
             return
         }
         
-        XCTAssertEqual(c.steps.count, 3)
+        XCTAssertEqual(c.graph.count, 3)
         
-        XCTAssertEqual(c.steps[0].description, "ROOT CYCLE:")
-        XCTAssertEqual(c.steps[1].description, "cycle --> ROOT CYCLE:")
+        XCTAssertEqual(c.graph[0].description, "ROOT CYCLE:")
+        XCTAssertEqual(c.graph[1].description, "cycle --> ROOT CYCLE:")
     }
     
     func testUnsymbolicated() throws {
@@ -107,23 +107,14 @@ final class CycleParseTests: XCTestCase {
             return
         }
         
-        XCTAssertEqual(c.steps.count, 5)
-        XCTAssertEqual(c.steps.last?.address, 0x7ff29c304510)
+        XCTAssertEqual(c.graph.count, 5)
+        XCTAssertEqual(c.graph.last?.address, 0x7ff29c304510)
     }
     
-    func testDontParseSeparatorSymbolicated() {
+    func testDontParseSeparator() {
         let input = """
                 ----
             ROOT CYCLE: <LeakySwiftObject 0x600002431220>
-            """
-        
-        XCTAssertThrowsError(try CycleParse().parse(input))
-    }
-
-    func testDontParseSeparatorUnsymbolicated() {
-        let input = """
-                ----
-            ROOT CYCLE: 0x7ff29c304630 [80]
             """
         
         XCTAssertThrowsError(try CycleParse().parse(input))
@@ -164,12 +155,22 @@ class MultiLeakRootParseTests: XCTestCase {
 
 class LeakParseTests: XCTestCase {
     func testNoStack() throws {
-            let input = """
-                    2 (64 bytes) << TOTAL >>
-                      1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001431a40> [32]
-                      1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001440440> [32]
-                """
+        let input = """
+                2 (64 bytes) << TOTAL >>
+                  1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001431a40> [32]
+                  1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001440440> [32]
+            """
         let leak = try LeakParse().parse(input)
-        XCTAssertEqual(leak.instances.count, 2)
+        XCTAssertEqual(leak.occurences.count, 2)
     }
 }
+
+//    8 (256K) ROOT CYCLE: <MemoryLeakingApp.LeakySwiftObject💦 0x600003e5c6c0> [32]
+//       4 (128K) cycle --> ROOT CYCLE: <MemoryLeakingApp.LeakySwiftObject💦 0x600003e5d7a0> [32]
+//          cycle --> CYCLE BACK TO <MemoryLeakingApp.LeakySwiftObject💦 0x600003e5c6c0> [32]
+//          3 (128K) __strong bigObject --> <BigObject 0x600003e5d780> [32]
+//             2 (128K) data + 8 --> <__DataStorage 0x600001de1d60> [80]
+//                1 (128K) _bytes --> 0x7fe760028000 [131072]
+//       3 (128K) __strong bigObject --> <BigObject 0x600003e5db60> [32]
+//          2 (128K) data + 8 --> <__DataStorage 0x600001de1d10> [80]
+//             1 (128K) _bytes --> 0x7fe760008000 [131072]

@@ -109,10 +109,7 @@ struct CycleItemUnsymbolicatedParse: Parser {
 struct CycleStepParse: Parser {
     func parse(_ input: inout Substring) throws -> LeakCycleStep {
         try Parse {
-            Not {  // Make sure to not consume the "Total separator"
-                Whitespace(.horizontal)
-                "----"
-            }
+
             
             Optionally {
                 CyclePrefixParse()
@@ -134,8 +131,8 @@ struct CycleStepParse: Parser {
         }
         .map {
             LeakCycleStep(
-                count: $0.0?.0,
-                size: $0.0?.1,
+                accumulatedObjectCount: $0.0?.0,
+                accumulatedSize: $0.0?.1,
                 description: $0.1.0,
                 address: $0.1.2)
         }
@@ -144,9 +141,14 @@ struct CycleStepParse: Parser {
 }
 
 struct CycleParse: Parser {
-    func parse(_ input: inout Substring) throws -> LeakInstance {
+    func parse(_ input: inout Substring) throws -> LeakOccurence {
         try Parse {
             Many {
+                Not {  // Make sure to not consume the "Total separator"
+                    Whitespace(.horizontal)
+                    "----"
+                }
+                
                 Whitespace(.horizontal)
 
                 CycleStepParse()
@@ -154,13 +156,13 @@ struct CycleParse: Parser {
                 "\n"
             }
         }
-        .map { LeakInstance.cycle(LeakCycle(steps: $0)) }
+        .map { LeakOccurence.cycle(LeakCycle(graph: $0)) }
         .parse(&input)
     }
 }
 
 struct RootLeakParse: Parser {
-    func parse(_ input: inout Substring) throws -> LeakInstance {
+    func parse(_ input: inout Substring) throws -> LeakOccurence {
         try Parse {
             Whitespace(.horizontal)
             CyclePrefixParse()
@@ -172,7 +174,7 @@ struct RootLeakParse: Parser {
             CycleObjectDescriptionParse()
         }
         .map {
-            LeakInstance.root(LeakRoot(
+            LeakOccurence.root(LeakRoot(
                 count: $0.0.0,
                 size: $0.0.1,
                 description: $0.1.0,
@@ -183,7 +185,7 @@ struct RootLeakParse: Parser {
 }
 
 struct MultiLeakCycleParse: Parser {
-    func parse(_ input: inout Substring) throws -> Array<LeakInstance> {
+    func parse(_ input: inout Substring) throws -> Array<LeakOccurence> {
         //        4 (128 bytes) << TOTAL >>
         //          ----
         //          2 (64 bytes) ROOT CYCLE: <LeakySwiftObject 0x600002424860> [32]
@@ -216,7 +218,7 @@ struct MultiLeakCycleParse: Parser {
 }
 
 struct MultiLeakRootParse: Parser {
-    func parse(_ input: inout Substring) throws -> Array<LeakInstance> {
+    func parse(_ input: inout Substring) throws -> Array<LeakOccurence> {
         //                 2 (64 bytes) << TOTAL >>
         //                    1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001431a40> [32]
         //                    1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001440440> [32]
@@ -249,7 +251,7 @@ struct LeakParse: Parser {
             }
         }
         .map {
-            Leak(stack: $0.0, instances: $0.1)
+            Leak(stack: $0.0, occurences: $0.1)
         }
         .parse(&input)
     }
