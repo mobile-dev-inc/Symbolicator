@@ -11,7 +11,7 @@ struct CrashReportParser: Symbolicator {
         
         // 7   ReportCrash                       0x000000010b8d9514 0x10b8b8000 + 136468
 
-        let regex = try! NSRegularExpression(pattern: #"\s*\d+\s+\#(appName)0x\w+\s(\w+)\s+"#)
+        let regex = try! NSRegularExpression(pattern: #"\s*\d+\s+\#(appName)\s+0x\w+\s(\w+)\s+"#)
 
         let range = NSRange(location: 0, length: crashFile.utf16.count)
         
