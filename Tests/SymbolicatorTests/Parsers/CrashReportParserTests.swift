@@ -11,11 +11,11 @@ final class CrashReportParserTests: XCTestCase {
         let symbolicator = CrashReportParser(string)
         let runner = SymbolicatorRunner(
             symbolicator: symbolicator,
-            dsymPath: TestResources().crashDsymUrl.appendingPathComponent("Contents/Resources/DWARF/MemoryLeakingApp").path,
+            dsymPath: TestResources().crashDsymUrl.appendingPathComponent("Contents/Resources/DWARF/CovidCertificateVerifier").path,
             arch: "x86_64")
         let result = runner.run(on: string)
         
-        XCTAssert(result.contains("0x102d6026e main (in MemoryLeakingApp) (<compiler-generated>:0)"))
-        XCTAssert(result.contains("0x102d62777 closure #2 in closure #1 in closure #1 in closure #1 in ContentView.body.getter (in MemoryLeakingApp) (ContentView.swift:40)"))
+        XCTAssert(result.contains("0x000000010b8c0c40 AppDelegate.completedOnboarding() (in CovidCertificateVerifier) (AppDelegate.swift:122)"))
+        XCTAssert(result.contains("0x000000010b8d9f2e VerificationState.wasRevocationSkipped.getter (in CovidCertificateVerifier) (Verifier.swift:108)"))
     }
 }
