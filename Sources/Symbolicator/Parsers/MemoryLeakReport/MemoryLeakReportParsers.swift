@@ -19,15 +19,12 @@ struct MemoryLeakParser {
 
 struct MemoryLeakReportParse: Parser {
     func parse(_ input: inout Substring) throws -> MemoryLeakReport {
-        let (headers, metadata, rest) = try Parse {
+        let (headers, metadata, leaks, rest) = try Parse {
             HeadersParse()
             MetadataParse()
             
-            Skip {
-                Many {
-                    StackParse()
-                    MultiLeakParse()
-                }
+            Many {
+                LeakParse()
             }
 
             Rest()
@@ -40,7 +37,7 @@ struct MemoryLeakReportParse: Parser {
         return MemoryLeakReport(
             headers: headers.toString,
             metadata: metadata.toString,
-            leaks: [])
+            leaks: leaks)
     }
 }
 

@@ -1,5 +1,6 @@
 import Foundation
 
-struct LeakInstance {
-    
+enum LeakInstance {
+    case cycle(LeakCycle)
+    case root(LeakRoot)
 }

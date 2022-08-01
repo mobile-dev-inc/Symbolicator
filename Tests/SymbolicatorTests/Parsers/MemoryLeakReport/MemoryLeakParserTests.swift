@@ -4,15 +4,18 @@ import class Foundation.Bundle
 import Parsing
 
 final class MemoryLeakParserTests: XCTestCase {
-    func testParseHeaders() throws {
+    func memoryLeakReport(from: URL) throws -> MemoryLeakReport? {
         let data = try Data(contentsOf: TestResources().memoryLeakUrl)
-        let report = MemoryLeakParser(data: data).parse()
+        return MemoryLeakParser(data: data).parse()
+    }
+    
+    func testParseHeaders() throws {
+        let report = try memoryLeakReport(from: TestResources().memoryLeakUrl)
         XCTAssertEqual(report?.headers["Identifier"], "MemoryLeakingApp")
     }
 
     func testParseMetadata() throws {
-        let data = try Data(contentsOf: TestResources().memoryLeakUrl)
-        let report = MemoryLeakParser(data: data).parse()
+        let report = try memoryLeakReport(from: TestResources().memoryLeakUrl)
         XCTAssertEqual(report?.metadata["leaks Report Version"], "4.0")
     }
 }

@@ -107,11 +107,16 @@ struct CycleItemUnsymbolicatedParse: Parser {
 
 
 struct CycleStepParse: Parser {
-    func parse(_ input: inout Substring) throws -> ((String?, String?, Int), Int) {
+    func parse(_ input: inout Substring) throws -> LeakCycleStep {
         try Parse {
             Not {  // Make sure to not consume the "Total separator"
                 Whitespace(.horizontal)
                 "----"
+            }
+            
+            Optionally {
+                CyclePrefixParse()
+                Whitespace(.horizontal)
             }
             
             OneOf {
@@ -127,32 +132,35 @@ struct CycleStepParse: Parser {
                 "]"
             }
         }
-        .parse(&input)
-    }
-}
-
-struct CycleParse: Parser {
-    func parse(_ input: inout Substring) throws -> Array<((Int, Int)?, ((String?, String?, Int), Int))> {
-        try Parse {
-            Many {
-                Whitespace(.horizontal)
-                
-                Optionally {
-                    CyclePrefixParse()
-                    Whitespace(.horizontal)
-                }
-                
-                CycleStepParse()
-            } separator: {
-                "\n"
-            }
+        .map {
+            LeakCycleStep(
+                count: $0.0?.0,
+                size: $0.0?.1,
+                description: $0.1.0,
+                address: $0.1.2)
         }
         .parse(&input)
     }
 }
 
+struct CycleParse: Parser {
+    func parse(_ input: inout Substring) throws -> LeakInstance {
+        try Parse {
+            Many {
+                Whitespace(.horizontal)
+
+                CycleStepParse()
+            } separator: {
+                "\n"
+            }
+        }
+        .map { LeakInstance.cycle(LeakCycle(steps: $0)) }
+        .parse(&input)
+    }
+}
+
 struct RootLeakParse: Parser {
-    func parse(_ input: inout Substring) throws -> ((Int, Int), (String, Int, Int)) {
+    func parse(_ input: inout Substring) throws -> LeakInstance {
         try Parse {
             Whitespace(.horizontal)
             CyclePrefixParse()
@@ -163,24 +171,19 @@ struct RootLeakParse: Parser {
             }
             CycleObjectDescriptionParse()
         }
-        .parse(&input)
-    }
-}
-
-struct SingleLeakParse: Parser {
-    func parse(_ input: inout Substring) throws -> LeakInstance {
-        try Parse {
-            OneOf {
-                RootLeakParse().map { l -> LeakInstance in print("Root leak \(l)"); return LeakInstance() }
-                CycleParse().map { l -> LeakInstance in print("Cycle \(l)"); return LeakInstance() }
-            }
+        .map {
+            LeakInstance.root(LeakRoot(
+                count: $0.0.0,
+                size: $0.0.1,
+                description: $0.1.0,
+                address: $0.1.2))
         }
         .parse(&input)
     }
 }
 
-struct MultiLeakParse: Parser {
-    func parse(_ input: inout Substring) throws -> ((Int, Int), Array<LeakInstance>) {
+struct MultiLeakCycleParse: Parser {
+    func parse(_ input: inout Substring) throws -> Array<LeakInstance> {
         //        4 (128 bytes) << TOTAL >>
         //          ----
         //          2 (64 bytes) ROOT CYCLE: <LeakySwiftObject 0x600002424860> [32]
@@ -201,11 +204,49 @@ struct MultiLeakParse: Parser {
 
             Many {
                 Whitespace()
-                SingleLeakParse()
+                CycleParse()
             } separator: {
                 Whitespace()
                 "----\n"
             }
+        }
+        .map { $0.1 }
+        .parse(&input)
+    }
+}
+
+struct MultiLeakRootParse: Parser {
+    func parse(_ input: inout Substring) throws -> Array<LeakInstance> {
+        //                 2 (64 bytes) << TOTAL >>
+        //                    1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001431a40> [32]
+        //                    1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001440440> [32]
+        try Parse {
+            Whitespace(.horizontal)
+            
+            CyclePrefixParse()
+            " << TOTAL >>\n"
+            Whitespace(.horizontal)
+
+            Many {
+                RootLeakParse()
+            } separator: { Whitespace() }
+        }
+        .map { $0.1 }
+        .parse(&input)
+    }
+}
+
+struct LeakParse: Parser {
+    func parse(_ input: inout Substring) throws -> Leak {
+        try Parse {
+            StackParse()
+            OneOf {
+                MultiLeakRootParse()
+                MultiLeakCycleParse()
+            }
+        }
+        .map {
+            Leak(stack: $0.0, instances: $0.1)
         }
         .parse(&input)
     }

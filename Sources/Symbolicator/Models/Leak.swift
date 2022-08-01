@@ -2,5 +2,5 @@ import Foundation
 
 struct Leak {
     let stack: Stack?
-    let cycle: [LeakCycle]
+    let instances: [LeakInstance]
 }
