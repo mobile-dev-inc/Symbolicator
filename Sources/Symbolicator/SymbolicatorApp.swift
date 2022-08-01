@@ -54,7 +54,7 @@ struct SymbolicatorApp: ParsableCommand {
         } else if contents.contains("Crashed Thread:") {
             let symbolicator = CrashReportParser(contents: contents, appName: appName)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
-            let result = runner.run(on: contents)
+            let result = runner.run(on: symbolicator.swappedAppCrashFileContents)
             print(result)
         }
     }
