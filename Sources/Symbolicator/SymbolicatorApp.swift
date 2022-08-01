@@ -44,7 +44,7 @@ struct SymbolicatorApp: ParsableCommand {
         guard let string = String(data: data, encoding: .utf8) else { fatalError() }
             
         if string.starts(with: "Process:") {
-            let symbolicator = MemoryLeakParser(string)
+            let symbolicator = MemoryLeakReportParser(string)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
             let result = runner.run(on: string)
             print(result)

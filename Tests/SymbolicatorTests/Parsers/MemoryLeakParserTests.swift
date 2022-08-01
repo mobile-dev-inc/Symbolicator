@@ -8,7 +8,7 @@ final class MemoryLeakParserTests: XCTestCase {
         let data = try Data(contentsOf: TestResources().memoryLeakUnsymbolicatedUrl)
         guard let string = String(data: data, encoding: .utf8) else { fatalError() }
 
-        let symbolicator = MemoryLeakParser(string)
+        let symbolicator = MemoryLeakReportParser(string)
         let runner = SymbolicatorRunner(
             symbolicator: symbolicator,
             dsymPath: TestResources().dsymUrl.appendingPathComponent("Contents/Resources/DWARF/MemoryLeakingApp").path,
