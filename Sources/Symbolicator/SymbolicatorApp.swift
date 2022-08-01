@@ -43,11 +43,17 @@ struct SymbolicatorApp: ParsableCommand {
     func parse(_ data: Data) {
         guard let string = String(data: data, encoding: .utf8) else { fatalError() }
             
-        if string.starts(with: "Process:") {
+        if string.contains("leaks Report Version") {
             let symbolicator = MemoryLeakReportParser(string)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
             let result = runner.run(on: string)
             print(result)
+        } else if string.contains("Crashed Thread:") {
+            let symbolicator = CrashReportParser(string)
+            let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
+            let result = runner.run(on: string)
+            print(result)
+
         }
     }
 }

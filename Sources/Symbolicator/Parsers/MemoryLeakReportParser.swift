@@ -7,7 +7,7 @@ struct MemoryLeakReportParser: Symbolicator {
         self.memoryLeakReport = memoryLeakReport
     }
 
-    func getLoadAddress(_ string: String) -> String {
+    func getLoadAddress() -> String {
         let regex = try! NSRegularExpression(pattern: #"Load Address:\s*(0x[0-9a-fA-F]+)\b"#)
 
         let range = NSRange(location: 0, length: memoryLeakReport.utf16.count)
@@ -24,8 +24,8 @@ struct MemoryLeakReportParser: Symbolicator {
         return String(memoryLeakReport[start..<end])
     }
     
-    func getUnsymbolizedAddresses(_ string: String) -> [String] {
-        let loadAddress = getLoadAddress(string)
+    func getUnsymbolizedAddresses() -> [String] {
+        let loadAddress = getLoadAddress()
         
         let regex0 = try! NSRegularExpression(pattern: #"\n----\n"#)
         let fullStringRange = NSRange(location: 0, length: memoryLeakReport.utf16.count)

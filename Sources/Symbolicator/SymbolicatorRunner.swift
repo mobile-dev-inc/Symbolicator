@@ -7,9 +7,9 @@ struct SymbolicatorRunner<S: Symbolicator> {
         
     func run(on string: String) -> String {
         var string = string
-        let loadAddress = symbolicator.getLoadAddress(string)
+        let loadAddress = symbolicator.getLoadAddress()
         
-        for address in symbolicator.getUnsymbolizedAddresses(string) {
+        for address in symbolicator.getUnsymbolizedAddresses() {
             let symbolized = try! atos(dsymPath, arch: arch, loadAddress: loadAddress, address: address)
             print(symbolized)
             
