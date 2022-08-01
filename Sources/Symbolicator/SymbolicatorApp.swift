@@ -9,6 +9,9 @@ struct SymbolicatorApp: ParsableCommand {
     @Argument(help: "Input file")
     var inputFileArgument: String
     
+    @Argument(help: "App name")
+    var appName: String
+    
     mutating func run() throws {
         print("Symbolicator, arguments:")
         print("   \(dsymArgument)")
@@ -41,19 +44,18 @@ struct SymbolicatorApp: ParsableCommand {
     }
     
     func parse(_ data: Data) {
-        guard let string = String(data: data, encoding: .utf8) else { fatalError() }
+        guard let contents = String(data: data, encoding: .utf8) else { fatalError() }
             
-        if string.contains("leaks Report Version") {
-            let symbolicator = MemoryLeakReportParser(string)
+        if contents.contains("leaks Report Version") {
+            let symbolicator = MemoryLeakReportParser(contents)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
-            let result = runner.run(on: string)
+            let result = runner.run(on: contents)
             print(result)
-        } else if string.contains("Crashed Thread:") {
-            let symbolicator = CrashReportParser(string)
+        } else if contents.contains("Crashed Thread:") {
+            let symbolicator = CrashReportParser(contents: contents, appName: appName)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
-            let result = runner.run(on: string)
+            let result = runner.run(on: contents)
             print(result)
-
         }
     }
 }
