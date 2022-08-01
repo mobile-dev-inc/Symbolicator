@@ -239,7 +239,10 @@ struct MultiLeakRootParse: Parser {
 struct LeakParse: Parser {
     func parse(_ input: inout Substring) throws -> Leak {
         try Parse {
-            StackParse()
+            Optionally {
+                StackParse()
+            }
+            
             OneOf {
                 MultiLeakRootParse()
                 MultiLeakCycleParse()

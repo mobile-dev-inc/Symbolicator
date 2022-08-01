@@ -53,13 +53,17 @@ struct StackFrameParse: Parser {
 struct StackParse: Parser {
     func parse(_ input: inout Substring) throws -> Stack {
         try Parse {
-            Prefix { $0 != "\n" }.map { String($0) }
-            "\n"
+            "STACK OF "
+            Int.parser()
+            " INSTANCES OF '"
+            Prefix { $0 != "'" }.map { String($0) }
+            "':\n"
+                        
             Many {
                 StackFrameParse()
             } separator: { "\n" } terminator: { "\n====" }
         }
-        .map { Stack(context: $0.0, frames: $0.1) }
+        .map { Stack(context: $0.1, frames: $0.2) }
         .parse(&input)
     }
 }

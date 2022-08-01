@@ -85,7 +85,7 @@ final class StackParseTests: XCTestCase {
         
         let stack = try StackParse().parse(input)
         
-        XCTAssertEqual(stack.context, "STACK OF 2 INSTANCES OF 'ROOT CYCLE: <LeakySwiftObject>':")
+        XCTAssertEqual(stack.context, "ROOT CYCLE: <LeakySwiftObject>")
         XCTAssertEqual(stack.frames.count, 37)
     }
 }

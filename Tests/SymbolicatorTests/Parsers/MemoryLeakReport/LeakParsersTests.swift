@@ -150,7 +150,7 @@ class MultiLeakCycleParseTests: XCTestCase {
     }
 }
 
-class LeakParseTests: XCTestCase {
+class MultiLeakRootParseTests: XCTestCase {
     func test() throws {
         let input = """
                 2 (64 bytes) << TOTAL >>
@@ -159,5 +159,17 @@ class LeakParseTests: XCTestCase {
             """
         let leaks = try MultiLeakRootParse().parse(input)
         XCTAssertEqual(leaks.count, 2)
+    }
+}
+
+class LeakParseTests: XCTestCase {
+    func testNoStack() throws {
+            let input = """
+                    2 (64 bytes) << TOTAL >>
+                      1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001431a40> [32]
+                      1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x600001440440> [32]
+                """
+        let leak = try LeakParse().parse(input)
+        XCTAssertEqual(leak.instances.count, 2)
     }
 }
