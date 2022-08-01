@@ -41,6 +41,13 @@ struct Symbolicator: ParsableCommand {
     }
     
     func parse(_ data: Data) {
-        print(MemoryLeakParser(data: data).parse()!)
+        guard let string = String(data: data, encoding: .utf8) else { fatalError() }
+            
+        if string.starts(with: "Process:") {
+            let symbolizer = MemoryLeakParser(string)
+            let runner = Runner(symbolizer: symbolizer, dsymPath: dsymArgument, arch: "x86_64")
+            let result = runner.run(on: string)
+            print(result)
+        }
     }
 }

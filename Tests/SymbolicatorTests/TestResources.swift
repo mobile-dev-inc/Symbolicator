@@ -4,6 +4,7 @@ class TestResources {
     static let shared = TestResources()
     
     let memoryLeakUrl = Bundle.module.url(forResource: "memory_leak", withExtension: "txt")!
+    let memoryLeakUnsymbolicatedUrl = Bundle.module.url(forResource: "memory_leak_unsymbolicated", withExtension: "txt")!
     let memoryLeakWithStacktraceUrl = Bundle.module.url(forResource: "memory_leak_with_stacktrace", withExtension: "txt")
     let memoryLeakWithSymbolicatedStacktraceUrl = Bundle.module.url(forResource: "memory_leak_with_symbolicated_stacktrace", withExtension: "txt")
     let memoryLeakWithUnsymbolicatedStacktraceUrl = Bundle.module.url(forResource: "memory_leak_with_unsymbolicated_stacktrace", withExtension: "txt")
