@@ -3,12 +3,12 @@ import ArgumentParser
 
 @main
 struct SymbolicatorApp: ParsableCommand {
-    @Argument(help: "Dsym file")
-    var dsymArgument: String
-
     @Argument(help: "Input file")
     var inputFileArgument: String
     
+    @Option(help: "Dsym file, will attempt to symbolize if passed")
+    var dsymFile: String?
+
     @Option(help: "App name")
     var appName: String?
     
@@ -20,7 +20,7 @@ struct SymbolicatorApp: ParsableCommand {
     
     mutating func run() throws {
         printStderr("Symbolicator, arguments:")
-        printStderr("   \(dsymArgument)")
+        printStderr("   \(dsymFile ?? "none")")
         printStderr("   \(inputFileArgument)")
         
 //        guard FileManager().fileExists(atPath: dsymArgument) else {
@@ -53,9 +53,14 @@ struct SymbolicatorApp: ParsableCommand {
         guard let contents = String(data: data, encoding: .utf8) else { fatalError() }
             
         if contents.contains("leaks Report Version") {
-            let symbolicator = MemoryLeakReportSymbolicator(contents)
-            let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: arch)
-            let result = runner.run(on: contents)
+            let result: String
+            if let dsymFile = dsymFile {
+                let symbolicator = MemoryLeakReportSymbolicator(contents)
+                let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymFile, arch: arch)
+                result = runner.run(on: contents)
+            } else {
+                result = contents
+            }
             
             if json {
                 do {
@@ -74,11 +79,15 @@ struct SymbolicatorApp: ParsableCommand {
             }
             
         } else if contents.contains("Crashed Thread:") {
-            let appName = appName ?? "CrashReporter"
-            let symbolicator = CrashReportSymbolicator(contents: contents, appName: appName)
-            let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: arch)
-            let result = runner.run(on: symbolicator.swappedAppCrashFileContents)
-            print(result)
+            if let dsymFile = dsymFile {
+                let appName = appName ?? "CrashReporter"
+                let symbolicator = CrashReportSymbolicator(contents: contents, appName: appName)
+                let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymFile, arch: arch)
+                let result = runner.run(on: symbolicator.swappedAppCrashFileContents)
+                print(result)
+            } else {
+                print(contents)
+            }
         }
     }
 }
