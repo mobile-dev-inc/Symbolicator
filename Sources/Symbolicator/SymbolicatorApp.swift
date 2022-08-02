@@ -38,7 +38,6 @@ struct SymbolicatorApp: ParsableCommand {
                 throw ValidationError("Input file not found at \(inputFileArgument)")
             }
             
-            
             inputData = try Data(contentsOf: url)
         }
 
