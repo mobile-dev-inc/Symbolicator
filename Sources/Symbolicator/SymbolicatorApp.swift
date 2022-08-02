@@ -11,6 +11,9 @@ struct SymbolicatorApp: ParsableCommand {
     
     @Argument(help: "App name")
     var appName: String
+
+    @Option(help: "JSON output")
+    var jsonArgument: Bool
     
     mutating func run() throws {
         print("Symbolicator, arguments:")
