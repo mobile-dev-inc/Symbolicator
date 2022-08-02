@@ -1,6 +1,6 @@
 import Foundation
 
-struct MemoryLeakReportParser: Symbolicator {
+struct MemoryLeakReportSymbolicator: Symbolicator {
     let memoryLeakReport: String
     
     init(_ memoryLeakReport: String) {

@@ -1,9 +1,9 @@
 import Foundation
 
-struct CrashReportParser: Symbolicator {
-    private let appName: String
-    private(set) var swappedAppCrashFileContents: String
-    
+struct CrashReportSymbolicator: Symbolicator {
+    let appName: String
+    let swappedAppCrashFileContents: String
+
     init(contents: String, appName: String) {
         self.swappedAppCrashFileContents = contents.replacingOccurrences(of: "ReportCrash", with: appName)
         self.appName = appName

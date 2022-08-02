@@ -50,12 +50,12 @@ struct SymbolicatorApp: ParsableCommand {
         guard let contents = String(data: data, encoding: .utf8) else { fatalError() }
             
         if contents.contains("leaks Report Version") {
-            let symbolicator = MemoryLeakReportParser(contents)
+            let symbolicator = MemoryLeakReportSymbolicator(contents)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
             let result = runner.run(on: contents)
             print(result)
         } else if contents.contains("Crashed Thread:") {
-            let symbolicator = CrashReportParser(contents: contents, appName: appName)
+            let symbolicator = CrashReportSymbolicator(contents: contents, appName: appName)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
             let result = runner.run(on: symbolicator.swappedAppCrashFileContents)
             print(result)

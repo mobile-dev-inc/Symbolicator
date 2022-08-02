@@ -2,13 +2,13 @@ import XCTest
 import Foundation
 @testable import Symbolicator
 
-final class MemoryLeakOutputTests: XCTestCase {
+final class MemoryLeakParserTests: XCTestCase {
     func parseFile(at url: URL) throws -> (MemoryLeakReport, String) {
         let data = try Data(contentsOf: url)
         guard let string = String(data: data, encoding: .utf8) else { fatalError() }
         var input = string[...]
         
-        return (try MemoryLeakOutput().parse(&input), String(input))
+        return (try MemoryLeakParser().parse(&input), String(input))
     }
     
     func test_simpleLeak() throws {

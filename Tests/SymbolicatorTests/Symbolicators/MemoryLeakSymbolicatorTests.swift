@@ -3,12 +3,12 @@ import class Foundation.Bundle
 @testable import Symbolicator
 import Parsing
 
-final class MemoryLeakParserTests: XCTestCase {
+final class MemoryLeakSymbolicatorTests: XCTestCase {
     func test() throws {
         let data = try Data(contentsOf: TestResources().memoryLeakUnsymbolicatedUrl)
         guard let string = String(data: data, encoding: .utf8) else { fatalError() }
 
-        let symbolicator = MemoryLeakReportParser(string)
+        let symbolicator = MemoryLeakReportSymbolicator(string)
         let runner = SymbolicatorRunner(
             symbolicator: symbolicator,
             dsymPath: TestResources().dsymUrl.appendingPathComponent("Contents/Resources/DWARF/MemoryLeakingApp").path,

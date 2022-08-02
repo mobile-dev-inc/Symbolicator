@@ -1,7 +1,7 @@
 import Foundation
 import Parsing
 
-struct MemoryLeakOutput: Parser {
+struct MemoryLeakParser: Parser {
     func parse(_ input: inout Substring) throws -> MemoryLeakReport {
         try Parse {
             PrefixUpTo("\nleaks Report Version:").map { String($0) }
