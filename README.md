@@ -7,7 +7,7 @@ The symbolicator util symbolicates memory leaks and crash reports.
 Using homebrew:
 ```
 brew tap mobile-dev-inc/tap
-brew install mobile-dev-inc/tap/symbolicator
+brew install symbolicator
 ```
 
 ## Usage
