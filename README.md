@@ -10,8 +10,6 @@ brew tap mobile-dev-inc/tap
 brew install mobile-dev-inc/tap/symbolicator
 ```
 
-Uninstall by running `rm /usr/local/bin/symbolicator`
-
 ## Usage
 
 ```
