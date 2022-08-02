@@ -1,6 +1,6 @@
 import Foundation
 
-struct Leak {
+struct Leak: Codable {
     let stack: String?
     let objectGraph: String
 }

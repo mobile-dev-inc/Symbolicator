@@ -39,13 +39,14 @@ final class SymbolicatorTests: XCTestCase {
         #endif
     }
     
-    func testExample() throws {
+    func testJSONOutput() throws {
         try runProcess { process in
             process.arguments = [
                 TestResources().dsymUrl.path,
                 TestResources().memoryLeakUrl.path,
             ]
         } test: { output, error in
+            
 //            XCTAssertEqual(output, "")
 //            XCTAssertEqual(error, "")
         }

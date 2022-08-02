@@ -12,8 +12,8 @@ struct SymbolicatorApp: ParsableCommand {
     @Option(help: "App name")
     var appName: String?
 
-    @Option(help: "JSON output")
-    var json: Bool = false
+    @Flag(help: "JSON output")
+    var json = false
     
     mutating func run() throws {
         print("Symbolicator, arguments:")
@@ -53,7 +53,23 @@ struct SymbolicatorApp: ParsableCommand {
             let symbolicator = MemoryLeakReportSymbolicator(contents)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
             let result = runner.run(on: contents)
-            print(result)
+            
+            if json {
+                do {
+                    let report = try MemoryLeakParser().parse(result)
+                    let encoder = JSONEncoder()
+                    let encoded = try encoder.encode(report)
+
+                    print(String(data: encoded, encoding: .utf8)!)
+                    
+                } catch {
+                    print("Failed to parse memory leak report \(error.localizedDescription)")
+                    print(error)
+                }
+            } else {
+                print(result)
+            }
+            
         } else if contents.contains("Crashed Thread:") {
             let appName = appName ?? "CrashReporter"
             let symbolicator = CrashReportSymbolicator(contents: contents, appName: appName)

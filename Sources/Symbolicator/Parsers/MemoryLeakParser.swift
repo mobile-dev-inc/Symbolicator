@@ -23,11 +23,17 @@ struct MemoryLeakParser: Parser {
             }
             
             Whitespace()
+            
+            Optionally {
+                Rest().map { String($0) }
+            }
         }
         .map {
             MemoryLeakReport(
                 headers: $0.0 + $0.1,
-                leaks: $0.2.map { Leak(stack: $0.0, objectGraph: $0.1) })
+                leaks: $0.2.map { Leak(stack: $0.0, objectGraph: $0.1) },
+                binaryImages: $0.3
+            )
         }
         .parse(&input)
     }
