@@ -7,17 +7,23 @@ The symbolicator util symbolicates memory leaks and crash reports.
 Using homebrew:
 ```
 brew tap mobile-dev-inc/tap
-brew install mobile-dev-inc/tap/symbolicator
+brew install symbolicator
 ```
 
 ## Usage
 
 ```
-symbolicator <.crash file or memory leak> --dsym <app.Dsym>
+# Symbolicate a crash report
+symbolicator YourApp.crash --dsym YourApp.Dsym
+
+# Symbolicate a memory leak
+leaks 1234 | symbolicator --dsym YourApp.Dsym -
+
+# Parse the memory leak to json
+symbolicator --json memory_leak.txt
 ```
 
 When the `--json` flag is specified, symbolicator will attempt to parse the output and generate a JSON representation.
-
 
 ## Contributing
 
