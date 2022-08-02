@@ -16,7 +16,6 @@ final class SymbolicatorTests: XCTestCase {
         // Mac Catalyst won't have `Process`, but it is supported for executables.
         #if !targetEnvironment(macCatalyst)
 
-        print(productsDirectory)
         let binary = productsDirectory.appendingPathComponent("Symbolicator")
         
         let process = Process()

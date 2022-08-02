@@ -13,7 +13,7 @@ func atos(_ dsymPath: String,
     task.arguments = ["-o", dsymPath, "-arch", arch, "-l", loadAddress, address]
     task.standardInput = nil
 
-    print((task.launchPath ?? "") + " " + (task.arguments?.joined(separator: " ") ?? ""))
+    printStderr((task.launchPath ?? "") + " " + (task.arguments?.joined(separator: " ") ?? ""))
     
     try task.run()
     

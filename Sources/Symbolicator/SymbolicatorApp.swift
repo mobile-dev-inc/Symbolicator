@@ -16,9 +16,9 @@ struct SymbolicatorApp: ParsableCommand {
     var json = false
     
     mutating func run() throws {
-        print("Symbolicator, arguments:")
-        print("   \(dsymArgument)")
-        print("   \(inputFileArgument)")
+        printStderr("Symbolicator, arguments:")
+        printStderr("   \(dsymArgument)")
+        printStderr("   \(inputFileArgument)")
         
 //        guard FileManager().fileExists(atPath: dsymArgument) else {
 //            throw ValidationError("Dsym file not found")
@@ -63,8 +63,8 @@ struct SymbolicatorApp: ParsableCommand {
                     print(String(data: encoded, encoding: .utf8)!)
                     
                 } catch {
-                    print("Failed to parse memory leak report \(error.localizedDescription)")
-                    print(error)
+                    printStderr("Failed to parse memory leak report \(error.localizedDescription)")
+                    printStderr(error)
                 }
             } else {
                 print(result)

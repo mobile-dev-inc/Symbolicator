@@ -10,9 +10,7 @@ struct SymbolicatorRunner<S: Symbolicator> {
         let loadAddress = symbolicator.getLoadAddress()
         
         for address in symbolicator.getUnsymbolizedAddresses() {
-            let symbolized = try! atos(dsymPath, arch: arch, loadAddress: loadAddress, address: address)
-            print(symbolized)
-            
+            let symbolized = try! atos(dsymPath, arch: arch, loadAddress: loadAddress, address: address)            
             string = string.replacingOccurrences(of: address + " " + loadAddress, with: address + " " + symbolized)
         }
         
