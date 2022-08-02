@@ -3,7 +3,10 @@ import class Foundation.Bundle
 
 final class SymbolicatorTests: XCTestCase {
     
-    func runProcess(setup: (Process) -> (), test: (String, String) -> ()) throws {
+    func runProcess(
+        setup: (Process) throws -> (),
+        test: (Int32, String, String) throws -> ()
+    ) throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
@@ -26,28 +29,49 @@ final class SymbolicatorTests: XCTestCase {
         process.standardOutput = stdoutPipe
         process.standardError = stderrPipe
 
-        setup(process)
+        try setup(process)
         
         try process.run()
         process.waitUntilExit()
+        
+        let status = process.terminationStatus
 
         let output = String(data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)!
         let error = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)!
         
-        test(output, error)
+        try test(status, output, error)
+        
         #endif
     }
     
     func testJSONOutput() throws {
         try runProcess { process in
             process.arguments = [
-                TestResources().dsymUrl.path,
                 TestResources().memoryLeakUrl.path,
+                "--dsym-file", TestResources().dsymUrl.path,
             ]
-        } test: { output, error in
+        } test: { status, output, error in
             
 //            XCTAssertEqual(output, "")
 //            XCTAssertEqual(error, "")
+        }
+    }
+    
+    func testStdin() throws {
+        try runProcess { process in
+            process.arguments = [
+                "-",
+                "--dsym-file", TestResources().dsymUrl.path
+            ]
+            
+            let data = try Data(contentsOf: TestResources().memoryLeakUrl)
+            let pipe = Pipe()
+            process.standardInput = pipe
+            try pipe.fileHandleForWriting.write(contentsOf: data)
+            pipe.fileHandleForWriting.closeFile()
+            
+        } test: { status, output, error in
+            
         }
     }
 

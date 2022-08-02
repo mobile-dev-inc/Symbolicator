@@ -5,10 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Symbolicator",
-    platforms: [.macOS(.v10_15)],
-    products: [
-        .executable(name: "symbolicator", targets: ["Symbolicator"])
-    ],
+    platforms: [.macOS(.v11)],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.0.0"),
         .package(url: "https://github.com/mobile-dev-inc/swift-parsing", from: "0.10.1"),

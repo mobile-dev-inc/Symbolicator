@@ -20,21 +20,18 @@ struct SymbolicatorApp: ParsableCommand {
     
     mutating func run() throws {
         printStderr("Symbolicator, arguments:")
-        printStderr("   \(dsymFile ?? "none")")
-        printStderr("   \(inputFileArgument)")
-        
-//        guard FileManager().fileExists(atPath: dsymArgument) else {
-//            throw ValidationError("Dsym file not found")
-//        }
+        printStderr("   dsym: \(dsymFile ?? "none")")
+        printStderr("   file: \(inputFileArgument)")
         
         let inputData: Data
         if inputFileArgument == "-" {
-            var buffer = Data()
-            while (FileHandle.standardInput.availableData.count > 0) {
-                buffer.append(FileHandle.standardInput.availableData)
+            printStderr("Reading from stdin")
+            
+            guard let data = try FileHandle.standardInput.readToEnd() else {
+                throw ReadError()
             }
             
-            inputData = buffer
+            inputData = data
         } else {
             let url = URL(fileURLWithPath: inputFileArgument)
             guard FileManager().fileExists(atPath: inputFileArgument) else {
@@ -91,3 +88,5 @@ struct SymbolicatorApp: ParsableCommand {
         }
     }
 }
+
+struct ReadError: Error {}

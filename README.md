@@ -9,7 +9,7 @@ Run these commands in the terminal
 ```
 git clone https://github.com/mobile-dev-inc/Symbolicator
 cd Symbolicator
-swift build --configuration release && cp .build/release/symbolicator /usr/local/bin
+swift build --configuration release && cp .build/release/Symbolicator /usr/local/bin/symbolicator
 cd -
 ```
 

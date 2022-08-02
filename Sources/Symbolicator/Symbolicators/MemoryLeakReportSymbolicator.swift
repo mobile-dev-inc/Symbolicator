@@ -27,21 +27,27 @@ struct MemoryLeakReportSymbolicator: Symbolicator {
     func getUnsymbolizedAddresses() -> [String] {
         let loadAddress = getLoadAddress()
         
+        let memoryLeakReportRangeEnd = memoryLeakReport.endIndex.utf16Offset(in: memoryLeakReport)
+        let fullStringRange = NSRange(location: 0, length: memoryLeakReportRangeEnd)
+
         let regex0 = try! NSRegularExpression(pattern: #"\n----\n"#)
-        let fullStringRange = NSRange(location: 0, length: memoryLeakReport.utf16.count)
         guard let match0 = regex0.firstMatch(in: memoryLeakReport, range: fullStringRange) else {
             fatalError()
         }
+        let location = match0.range.upperBound
         
-        let regex1 = try! NSRegularExpression(pattern: #"Binary Images:"#)
-        guard let match1 = regex1.firstMatch(in: memoryLeakReport, range: fullStringRange) else {
-            fatalError()
+        let length: Int
+        if let regex1 = try? NSRegularExpression(pattern: #"Binary Images:"#),
+            let match1 = regex1.firstMatch(in: memoryLeakReport, range: fullStringRange)  {
+            length = match1.range.lowerBound - location
+        } else {
+            length = memoryLeakReportRangeEnd - location
         }
         
         // Search after the headers and before the Binary Images
         let range = NSRange(
-            location: match0.range.upperBound,
-            length: match1.range.lowerBound)
+            location: location,
+            length: length)
         
         // Mach: 0x6000024250e0
         // But don't match: <LeakySwiftObject 0x6000024250e0>
@@ -54,12 +60,8 @@ struct MemoryLeakReportSymbolicator: Symbolicator {
             range: range)
                 
         let result = matches.map { match -> String in
-            let range = match.range(at: 1)
-            
-            let start = String.Index.init(utf16Offset: range.lowerBound, in: memoryLeakReport)
-            let end = String.Index.init(utf16Offset: range.upperBound, in: memoryLeakReport)
-            
-            return String(memoryLeakReport[start..<end])
+            let range = Range(match.range(at: 1), in: memoryLeakReport)!
+            return String(memoryLeakReport[range])
         }
         
         return Array(Set(result))
