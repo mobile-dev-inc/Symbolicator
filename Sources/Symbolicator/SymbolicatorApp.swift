@@ -9,11 +9,11 @@ struct SymbolicatorApp: ParsableCommand {
     @Argument(help: "Input file")
     var inputFileArgument: String
     
-    @Argument(help: "App name")
-    var appName: String
+    @Option(help: "App name")
+    var appName: String?
 
     @Option(help: "JSON output")
-    var jsonArgument: Bool
+    var json: Bool = false
     
     mutating func run() throws {
         print("Symbolicator, arguments:")
@@ -55,6 +55,7 @@ struct SymbolicatorApp: ParsableCommand {
             let result = runner.run(on: contents)
             print(result)
         } else if contents.contains("Crashed Thread:") {
+            let appName = appName ?? "CrashReporter"
             let symbolicator = CrashReportSymbolicator(contents: contents, appName: appName)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
             let result = runner.run(on: symbolicator.swappedAppCrashFileContents)
