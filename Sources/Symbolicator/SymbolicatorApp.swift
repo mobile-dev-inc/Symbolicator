@@ -11,6 +11,9 @@ struct SymbolicatorApp: ParsableCommand {
     
     @Option(help: "App name")
     var appName: String?
+    
+    @Option(help: "Build architecture")
+    var arch: String = "x86_64"
 
     @Flag(help: "JSON output")
     var json = false
@@ -51,7 +54,7 @@ struct SymbolicatorApp: ParsableCommand {
             
         if contents.contains("leaks Report Version") {
             let symbolicator = MemoryLeakReportSymbolicator(contents)
-            let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
+            let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: arch)
             let result = runner.run(on: contents)
             
             if json {
@@ -73,7 +76,7 @@ struct SymbolicatorApp: ParsableCommand {
         } else if contents.contains("Crashed Thread:") {
             let appName = appName ?? "CrashReporter"
             let symbolicator = CrashReportSymbolicator(contents: contents, appName: appName)
-            let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: "x86_64")
+            let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymArgument, arch: arch)
             let result = runner.run(on: symbolicator.swappedAppCrashFileContents)
             print(result)
         }
