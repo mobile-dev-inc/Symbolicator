@@ -1,21 +1,6 @@
 import Foundation
 import Parsing
 
-struct MemoryLeakReport {
-    let headers: String
-    let leaks: [Leak]
-
-    init(headers: String, leaks: [Leak]) {
-        self.headers = headers
-        self.leaks = leaks
-    }
-}
-
-struct Leak {
-    let stack: String?
-    let objectGraph: String
-}
-
 struct MemoryLeakOutput: Parser {
     func parse(_ input: inout Substring) throws -> MemoryLeakReport {
         try Parse {
@@ -36,6 +21,8 @@ struct MemoryLeakOutput: Parser {
                 
                 ObjectGraphParse()
             }
+            
+            Whitespace()
         }
         .map {
             MemoryLeakReport(

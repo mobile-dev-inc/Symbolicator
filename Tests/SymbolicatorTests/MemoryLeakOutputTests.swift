@@ -23,7 +23,7 @@ final class MemoryLeakOutputTests: XCTestCase {
     func test_unsymbolicated() throws {
         let (report, rest) = try parseFile(at: TestResources().memoryLeakUnsymbolicatedUrl)
         
-        XCTAssert(rest.starts(with: "\n\n\n\nBinary Images:"))
+        XCTAssert(rest.starts(with: "Binary Images:"))
         
         XCTAssert(report.headers.starts(with: "Process:"))
         XCTAssert(report.headers.contains("Process 6258: 3 leaks for 96 total leaked bytes."))
@@ -34,7 +34,7 @@ final class MemoryLeakOutputTests: XCTestCase {
     func test_symbolicated_with_stacktrace() throws {
         let (report, rest) = try parseFile(at: TestResources().memoryLeakWithSymbolicatedStacktraceUrl)
         
-        XCTAssert(rest.starts(with: "\n\n\n\nBinary Images:"))
+        XCTAssert(rest.starts(with: "Binary Images:"))
         
         XCTAssert(report.headers.starts(with: "Process:"))
         XCTAssert(report.headers.contains("Process 40903: 8 leaks for 384 total leaked bytes."))
