@@ -20,11 +20,12 @@ struct LeakParser: Parser {
             
             let name = try? LeakNameFromObjectGraphParser().parse(objectGraph)
             let occuranceCount = try? LeakOccurenceCountParser().parse(objectGraph)
+            let totalLeakedBytes = try? TotalLeakedBytesParser().parse(objectGraph)
             
             return Leak(
                 name: name,
                 occuranceCount: occuranceCount ?? 1,
-                totalLeakedBytes: 0,
+                totalLeakedBytes: totalLeakedBytes ?? 0,
                 stack: stack,
                 objectGraph: objectGraph)
         }
@@ -135,6 +136,38 @@ struct LeakOccurenceCountParser: Parser {
             $0
                 .filter { !$0.starts(with: " ") && !$0.starts(with: "----") }
                 .count
+        }
+        .parse(&input)
+    }
+}
+
+struct TotalLeakedBytesParser: Parser {
+    func parse(_ input: inout Substring) throws -> Int {
+        try Parse {
+            Skip {
+                Optionally { Whitespace(.horizontal) }
+                Int.parser()
+            }
+            " ("
+            OneOf {
+                Parse {
+                    Int.parser()
+                    " bytes)"
+                }
+                Parse {
+                    Double.parser().map { Int($0 * 1000) }
+                    "K)"
+                }
+                Parse {
+                    Double.parser().map { Int($0 * 1000 * 1000) }
+                    "M)"
+                }
+                Parse {
+                    Double.parser().map { Int($0 * 1000 * 1000 * 1000) }
+                    "G)"
+                }
+            }
+            Skip { Rest() }
         }
         .parse(&input)
     }
