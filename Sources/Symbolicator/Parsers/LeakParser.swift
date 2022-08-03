@@ -18,10 +18,7 @@ struct LeakParser: Parser {
             let stack = $0.0
             let objectGraph = $0.1
             
-            let name = (
-                try? stack.map { try? LeakNameFromStackParser().parse($0) }
-                ?? LeakNameFromObjectGraphParser().parse(objectGraph))
-
+            let name = try? LeakNameFromObjectGraphParser().parse(objectGraph)
             let occuranceCount = try? LeakOccurenceCountParser().parse(objectGraph)
             
             return Leak(

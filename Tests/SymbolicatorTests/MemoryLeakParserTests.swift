@@ -66,10 +66,10 @@ final class MemoryLeakParserTests: XCTestCase {
         
         XCTAssertEqual(report.leaks.count, 4)
         
-        XCTAssertEqual(report.leaks[0].name, "MemoryLeakingApp")
+        XCTAssertEqual(report.leaks[0].name, "MemoryLeakingApp.LeakySwiftObject💦")
         XCTAssertEqual(report.leaks[0].occuranceCount, 1)
 
-        XCTAssertEqual(report.leaks[1].name, "MemoryLeakingApp")
+        XCTAssertEqual(report.leaks[1].name, "MemoryLeakingApp.LeakySwiftObject💦")
         XCTAssertEqual(report.leaks[1].occuranceCount, 1)
 
         XCTAssertEqual(report.leaks[2].name, "malloc<176>")
