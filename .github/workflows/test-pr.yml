@@ -1,9 +1,12 @@
-name: GitHub Actions Demo
+name: Test PR
 on: 
   push:
     branches-ignore: [main]
 jobs:
-  test:
+  build_and_test:
     runs-on: macos-12
     steps:
-      - run: swift test
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Build and test
+        run: swift test
