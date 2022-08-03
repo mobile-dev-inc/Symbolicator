@@ -45,11 +45,18 @@ struct LeakParse: Parser {
             ObjectGraphParse()
         }
         .map {
-            Leak(
-                name: "",
+            let stack = $0.0
+            let objectGraph = $0.1
+            
+            let name = (
+                try? stack.map { try? LeakNameFromStackParse().parse($0) }
+                ?? LeakNameFromObjectGraphParse().parse(objectGraph))
+
+            return Leak(
+                name: name,
                 totalLeakedBytes: 0,
-                stack: $0.0,
-                objectGraph: $0.1)
+                stack: stack,
+                objectGraph: objectGraph)
         }
         .parse(&input)
     }
@@ -73,6 +80,61 @@ struct ObjectGraphParse: Parser {
             Rest()
         }
         .map { String($0) }
+        .parse(&input)
+    }
+}
+
+struct LeakNameFromStackParse: Parser {
+    func parse(_ input: inout Substring) throws -> String {
+        try Parse {
+            OneOf {
+                Parse {
+                    Skip {
+                        OneOf {
+                            PrefixThrough("'ROOT LEAK: <")
+                            PrefixThrough("'ROOT CYCLE: <")
+                        }
+                    }
+                    PrefixUpTo(">'").map { String($0) }
+                }
+                Parse {
+                    Skip {
+                        OneOf {
+                            PrefixThrough("'ROOT LEAK: ")
+                            PrefixThrough("'ROOT CYCLE: ")
+                        }
+                    }
+                    PrefixUpTo("'").map { String($0) }
+                }
+            }
+            Skip { Rest() }
+        }
+        .parse(&input)
+    }
+}
+
+struct LeakNameFromObjectGraphParse: Parser {
+    func parse(_ input: inout Substring) throws -> String {
+        try Parse {
+            OneOf {
+                Parse {
+                    OneOf {
+                        Skip { PrefixThrough("ROOT LEAK: <") }
+                        Skip { PrefixThrough("ROOT CYCLE: <") }
+                    }
+                    PrefixUpTo(" 0x").map { String($0) }
+                }
+                Parse {
+                    Skip {
+                        PrefixThrough("ROOT LEAK: 0x")
+                        PrefixThrough(" [")
+                    }
+                    PrefixUpTo("]").map { "malloc<\($0)>" }
+                }
+            }
+            
+            Skip { Rest() }
+        }
         .parse(&input)
     }
 }
