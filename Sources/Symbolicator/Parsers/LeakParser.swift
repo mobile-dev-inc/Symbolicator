@@ -36,8 +36,13 @@ struct LeakParser: Parser {
 struct StackParser: Parser {
     func parse(_ input: inout Substring) throws -> String {
         try Parse {
-            PrefixUpTo("\n====\n")
-            "\n====\n"
+            "STACK OF "
+
+            Skip { PrefixThrough("\n") }
+
+            PrefixUpTo("====\n")
+
+            "====\n"
         }
         .map { String($0) }
         .parse(&input)
@@ -47,39 +52,13 @@ struct StackParser: Parser {
 struct ObjectGraphParser: Parser {
     func parse(_ input: inout Substring) throws -> String {
         try OneOf {
-            PrefixUpTo("\n\n")
+            Parse {
+                PrefixUpTo("\n\n").map { $0 + "\n" }
+                "\n\n"
+            }
             Rest()
         }
         .map { String($0) }
-        .parse(&input)
-    }
-}
-
-struct LeakNameFromStackParser: Parser {
-    func parse(_ input: inout Substring) throws -> String {
-        try Parse {
-            OneOf {
-                Parse {
-                    Skip {
-                        OneOf {
-                            PrefixThrough("'ROOT LEAK: <")
-                            PrefixThrough("'ROOT CYCLE: <")
-                        }
-                    }
-                    PrefixUpTo(">'").map { String($0) }
-                }
-                Parse {
-                    Skip {
-                        OneOf {
-                            PrefixThrough("'ROOT LEAK: ")
-                            PrefixThrough("'ROOT CYCLE: ")
-                        }
-                    }
-                    PrefixUpTo("'").map { String($0) }
-                }
-            }
-            Skip { Rest() }
-        }
         .parse(&input)
     }
 }
@@ -89,15 +68,20 @@ struct LeakNameFromObjectGraphParser: Parser {
         try Parse {
             OneOf {
                 Parse {
-                    OneOf {
-                        Skip { PrefixThrough("ROOT LEAK: <") }
-                        Skip { PrefixThrough("ROOT CYCLE: <") }
+                    Skip {
+                        OneOf {
+                            PrefixThrough("ROOT LEAK: <")
+                            PrefixThrough("ROOT CYCLE: <")
+                        }
                     }
                     PrefixUpTo(" 0x").map { String($0) }
                 }
                 Parse {
                     Skip {
-                        PrefixThrough("ROOT LEAK: 0x")
+                        OneOf {
+                            PrefixThrough("ROOT LEAK: 0x")
+                            PrefixThrough("ROOT CYCLE: 0x")
+                        }
                         PrefixThrough(" [")
                     }
                     PrefixUpTo("]").map { "malloc<\($0)>" }

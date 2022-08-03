@@ -10,7 +10,7 @@ struct MemoryLeakReportParser: Parser {
             Whitespace()
             
             Many {
-                Not { "\n\n\n" }
+                Not { "\n\n" }
                 LeakParser()
             }
             

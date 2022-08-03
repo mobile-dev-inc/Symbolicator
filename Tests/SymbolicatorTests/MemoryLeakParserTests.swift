@@ -13,23 +13,44 @@ final class MemoryLeakParserTests: XCTestCase {
         let report = try parseFile(at: TestResources().memoryLeakNoStackUrl)
         
         XCTAssert(report.headers.contains("Load Address:    0x10ae33000"))
-        XCTAssertEqual(report.leaks.first?.name, "LeakySwiftObject")
-        XCTAssertEqual(report.leaks.first?.occuranceCount, 2)
-        XCTAssertEqual(report.leaks.first?.totalLeakedBytes, 64)
-        XCTAssert(report.leaks.first?.objectGraph.contains("ROOT LEAK: <LeakySwiftObject 0x600001431a40> [32]") ?? false)
+        
+        guard let leak = report.leaks.first else {
+            XCTFail("No leak in report")
+            return
+        }
+        
+        XCTAssertEqual(leak.name, "LeakySwiftObject")
+        XCTAssertEqual(leak.occuranceCount, 2)
+        XCTAssertEqual(leak.totalLeakedBytes, 64)
+        XCTAssert(leak.objectGraph.contains("ROOT LEAK: <LeakySwiftObject 0x600001431a40> [32]"))
+        XCTAssertNil(leak.stack)
         XCTAssertNil(report.binaryImages)
     }
 
     func test_unsymbolicated() throws {
         let report = try parseFile(at: TestResources().memoryLeakUnsymbolicatedUrl)
-                
+
         XCTAssert(report.headers.starts(with: "Process:"))
         XCTAssert(report.headers.contains("Process 6258: 3 leaks for 96 total leaked bytes."))
-                  
-        XCTAssertEqual(report.leaks.first?.name, "LeakySwiftObject")
-        XCTAssertEqual(report.leaks.first?.occuranceCount, 3)
-        XCTAssertEqual(report.leaks.first?.totalLeakedBytes, 96)
-        XCTAssert(report.leaks.first?.objectGraph.contains("1 (32 bytes) ROOT LEAK: <LeakySwiftObject 0x60000003d140> [32]") ?? false)
+
+        guard let leak = report.leaks.first else {
+            XCTFail("No leak in report")
+            return
+        }
+
+        XCTAssertEqual(leak.name, "LeakySwiftObject")
+        XCTAssertEqual(leak.occuranceCount, 3)
+        XCTAssertEqual(leak.totalLeakedBytes, 96)
+        XCTAssert(leak.objectGraph.hasPrefix("    3 (96 bytes) << TOTAL >>"))
+        XCTAssert(leak.objectGraph.hasSuffix("<LeakySwiftObject 0x60000003d140> [32]\n"))
+
+        guard let stack = leak.stack else {
+            XCTFail("No stack for leak \(leak)")
+            return
+        }
+
+        XCTAssert(stack.hasPrefix("31  dyld"))
+        XCTAssert(stack.hasSuffix("_malloc_zone_malloc + 241 \n"))
 
         XCTAssert(report.binaryImages?.starts(with: "Binary Images:") ?? false)
     }
@@ -37,7 +58,7 @@ final class MemoryLeakParserTests: XCTestCase {
     func test_symbolicated_with_stacktrace() throws {
         let report = try parseFile(at: TestResources().memoryLeakWithSymbolicatedStacktraceUrl)
         
-        XCTAssert(report.headers.starts(with: "Process:"))
+        XCTAssert(report.headers.hasPrefix("Process:"))
         XCTAssert(report.headers.contains("Process 40903: 8 leaks for 384 total leaked bytes."))
         
         XCTAssertEqual(report.leaks.count, 4)
@@ -74,11 +95,11 @@ final class MemoryLeakParserTests: XCTestCase {
         
         XCTAssertEqual(report.leaks[0].name, "MemoryLeakingApp.LeakySwiftObject💦")
         XCTAssertEqual(report.leaks[0].occuranceCount, 1)
-        XCTAssertEqual(report.leaks[0].totalLeakedBytes, 256 * 1024)
+        XCTAssertEqual(report.leaks[0].totalLeakedBytes, 256 * 1000)
 
         XCTAssertEqual(report.leaks[1].name, "MemoryLeakingApp.LeakySwiftObject💦")
         XCTAssertEqual(report.leaks[1].occuranceCount, 1)
-        XCTAssertEqual(report.leaks[1].totalLeakedBytes, 256 * 1024)
+        XCTAssertEqual(report.leaks[1].totalLeakedBytes, 256 * 1000)
 
         XCTAssertEqual(report.leaks[2].name, "malloc<176>")
         XCTAssertEqual(report.leaks[2].occuranceCount, 3)
