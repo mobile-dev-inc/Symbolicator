@@ -66,7 +66,7 @@ final class SymbolicatorTests: XCTestCase {
     func testJSONOutput() throws {
         let (status, output, _) = try runProcess { process in
             process.arguments = [
-                TestResources().memoryLeakUrl.path,
+                TestResources().memoryLeakNoStackUrl.path,
                 "--json"
             ]
         }
@@ -89,7 +89,7 @@ final class SymbolicatorTests: XCTestCase {
                 "-",
             ]
             
-            let data = try Data(contentsOf: TestResources().memoryLeakUrl)
+            let data = try Data(contentsOf: TestResources().memoryLeakNoStackUrl)
             let pipe = Pipe()
             process.standardInput = pipe
             try pipe.fileHandleForWriting.write(contentsOf: data)

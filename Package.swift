@@ -21,13 +21,14 @@ let package = Package(
             name: "SymbolicatorTests",
             dependencies: ["Symbolicator"],
             resources: [
-                .copy("Resources/memory_leak.txt"),
+                .copy("Resources/memory_leak_no_stack.txt"),
                 .copy("Resources/memory_leak_with_stacktrace.txt"),
                 .copy("Resources/memory_leak_with_symbolicated_stacktrace.txt"),
                 .copy("Resources/MemoryLeakingApp.app.dSYM"),
                 .copy("Resources/non_symbolicated_crash.crash"),
                 .copy("Resources/crash.app.dSYM"),
-                .copy("Resources/memory_leak_unsymbolicated.txt")
+                .copy("Resources/memory_leak_unsymbolicated.txt"),
+                .copy("Resources/memory_leak_unicode_unsymbolicated.txt"),
             ]),
     ]
 )

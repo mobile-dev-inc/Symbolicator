@@ -22,8 +22,11 @@ struct LeakParser: Parser {
                 try? stack.map { try? LeakNameFromStackParser().parse($0) }
                 ?? LeakNameFromObjectGraphParser().parse(objectGraph))
 
+            let occuranceCount = try? LeakOccurenceCountParser().parse(objectGraph)
+            
             return Leak(
                 name: name,
+                occuranceCount: occuranceCount ?? 1,
                 totalLeakedBytes: 0,
                 stack: stack,
                 objectGraph: objectGraph)
@@ -104,6 +107,37 @@ struct LeakNameFromObjectGraphParser: Parser {
             }
             
             Skip { Rest() }
+        }
+        .parse(&input)
+    }
+}
+
+struct LeakOccurenceCountParser: Parser {
+    func parse(_ input: inout Substring) throws -> Int {
+        // If there is no TOTOL header, this parser will fail
+        // In that case there is only one leak
+        try Parse {
+            // Skip the TOTAL header
+            Skip {
+                PrefixThrough("<< TOTAL >>")
+                PrefixThrough("\n")
+            }
+            
+            // Count the lines starting with 6 spaces
+            Many {
+                "      "
+                OneOf {
+                    PrefixThrough("\n")
+                    Rest()
+                }
+            }
+        }
+        .map {
+            // Skip separators (starting with "----")
+            //  and objects-referred-to-by-root-leak (starting with " ")
+            $0
+                .filter { !$0.starts(with: " ") && !$0.starts(with: "----") }
+                .count
         }
         .parse(&input)
     }

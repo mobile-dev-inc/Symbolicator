@@ -6,7 +6,7 @@ import Parsing
 final class MemoryLeakSymbolicatorTests: XCTestCase {
     
     func testNoBinaryImages() throws {
-        let data = try Data(contentsOf: TestResources().memoryLeakUrl)
+        let data = try Data(contentsOf: TestResources().memoryLeakNoStackUrl)
         guard let string = String(data: data, encoding: .utf8) else { fatalError() }
 
         let symbolicator = MemoryLeakReportSymbolicator(string)
