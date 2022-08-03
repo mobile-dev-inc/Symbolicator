@@ -1,56 +1,26 @@
 import Foundation
 import Parsing
 
-struct MemoryLeakParser: Parser {
-    func parse(_ input: inout Substring) throws -> MemoryLeakReport {
-        try Parse {
-            PrefixUpTo("\nleaks Report Version:").map { String($0) }
-            PrefixUpTo("\n\n").map { String($0) }
- 
-            Whitespace()
-            
-            Many {
-                Not { "\n\n\n" }
-                LeakParse()
-            }
-            
-            Whitespace()
-            
-            Optionally {
-                Rest().map { String($0) }
-            }
-        }
-        .map {
-            MemoryLeakReport(
-                headers: $0.0 + $0.1,
-                leaks: $0.2,
-                binaryImages: $0.3
-            )
-        }
-        .parse(&input)
-    }
-}
-
-struct LeakParse: Parser {
+struct LeakParser: Parser {
     func parse(_ input: inout Substring) throws -> Leak {
         try Parse {
             Optionally {
-                StackParse()
+                StackParser()
             }
             
             Skip {
                 Optionally { "\n\n" }
             }
             
-            ObjectGraphParse()
+            ObjectGraphParser()
         }
         .map {
             let stack = $0.0
             let objectGraph = $0.1
             
             let name = (
-                try? stack.map { try? LeakNameFromStackParse().parse($0) }
-                ?? LeakNameFromObjectGraphParse().parse(objectGraph))
+                try? stack.map { try? LeakNameFromStackParser().parse($0) }
+                ?? LeakNameFromObjectGraphParser().parse(objectGraph))
 
             return Leak(
                 name: name,
@@ -62,7 +32,7 @@ struct LeakParse: Parser {
     }
 }
 
-struct StackParse: Parser {
+struct StackParser: Parser {
     func parse(_ input: inout Substring) throws -> String {
         try Parse {
             PrefixUpTo("\n====\n")
@@ -73,7 +43,7 @@ struct StackParse: Parser {
     }
 }
 
-struct ObjectGraphParse: Parser {
+struct ObjectGraphParser: Parser {
     func parse(_ input: inout Substring) throws -> String {
         try OneOf {
             PrefixUpTo("\n\n")
@@ -84,7 +54,7 @@ struct ObjectGraphParse: Parser {
     }
 }
 
-struct LeakNameFromStackParse: Parser {
+struct LeakNameFromStackParser: Parser {
     func parse(_ input: inout Substring) throws -> String {
         try Parse {
             OneOf {
@@ -113,7 +83,7 @@ struct LeakNameFromStackParse: Parser {
     }
 }
 
-struct LeakNameFromObjectGraphParse: Parser {
+struct LeakNameFromObjectGraphParser: Parser {
     func parse(_ input: inout Substring) throws -> String {
         try Parse {
             OneOf {

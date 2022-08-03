@@ -6,7 +6,7 @@ final class MemoryLeakParserTests: XCTestCase {
     func parseFile(at url: URL) throws -> MemoryLeakReport {
         let data = try Data(contentsOf: url)
         guard let string = String(data: data, encoding: .utf8) else { fatalError() }
-        return try MemoryLeakParser().parse(string)
+        return try MemoryLeakReportParser().parse(string)
     }
     
     func test_simpleLeak() throws {

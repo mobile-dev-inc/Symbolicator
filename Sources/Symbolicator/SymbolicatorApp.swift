@@ -60,7 +60,7 @@ struct SymbolicatorApp: ParsableCommand {
             
             if json {
                 do {
-                    let report = try MemoryLeakParser().parse(result)
+                    let report = try MemoryLeakReportParser().parse(result)
                     let encoder = JSONEncoder()
                     let encoded = try encoder.encode(report)
 
