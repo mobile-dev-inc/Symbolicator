@@ -11,15 +11,7 @@ struct MemoryLeakParser: Parser {
             
             Many {
                 Not { "\n\n\n" }
-                Optionally {
-                    StackParse()
-                }
-                
-                Skip {
-                    Optionally { "\n\n" }
-                }
-                
-                ObjectGraphParse()
+                LeakParse()
             }
             
             Whitespace()
@@ -31,9 +23,33 @@ struct MemoryLeakParser: Parser {
         .map {
             MemoryLeakReport(
                 headers: $0.0 + $0.1,
-                leaks: $0.2.map { Leak(stack: $0.0, objectGraph: $0.1) },
+                leaks: $0.2,
                 binaryImages: $0.3
             )
+        }
+        .parse(&input)
+    }
+}
+
+struct LeakParse: Parser {
+    func parse(_ input: inout Substring) throws -> Leak {
+        try Parse {
+            Optionally {
+                StackParse()
+            }
+            
+            Skip {
+                Optionally { "\n\n" }
+            }
+            
+            ObjectGraphParse()
+        }
+        .map {
+            Leak(
+                name: "",
+                totalLeakedBytes: 0,
+                stack: $0.0,
+                objectGraph: $0.1)
         }
         .parse(&input)
     }
@@ -52,13 +68,11 @@ struct StackParse: Parser {
 
 struct ObjectGraphParse: Parser {
     func parse(_ input: inout Substring) throws -> String {
-        try Parse {
-            OneOf {
-                PrefixUpTo("\n\n")
-                Rest()
-            }
+        try OneOf {
+            PrefixUpTo("\n\n")
+            Rest()
         }
-            .map { String($0) }
-            .parse(&input)
+        .map { String($0) }
+        .parse(&input)
     }
 }
