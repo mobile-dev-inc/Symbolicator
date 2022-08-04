@@ -11,4 +11,4 @@ jobs:
       with:
         tap: izumin5210/homebrew-tools
         token: ${{ secrets.GITHUB_TOKEN }}
-        tap-token: ${{ secrets.TAP_GITHUB_TOKEN }}
+        tap-token: ${{ secrets.GITHUB_TOKEN }}
