@@ -1,7 +1,9 @@
-name: Test PR
-on: 
+name: Run tests
+
+on:
   push:
     branches-ignore: [main]
+
 jobs:
   build_and_test:
     runs-on: macos-12

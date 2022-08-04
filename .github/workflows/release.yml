@@ -1,0 +1,19 @@
+name: Create new release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: swift build --configuration release
+      - name: Test
+        run: swift test --skip-build
+      - name: Release
+        uses: softprops/action-gh-release@v1
