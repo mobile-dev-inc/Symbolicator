@@ -1,0 +1,14 @@
+name: Deploy Homebrew
+
+on: workflow_dispatch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Update Homebrew Formula
+      uses: izumin5210/action-homebrew-tap@v1
+      with:
+        tap: izumin5210/homebrew-tools
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tap-token: ${{ secrets.TAP_GITHUB_TOKEN }}
