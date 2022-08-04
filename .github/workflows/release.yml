@@ -11,9 +11,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Test
+        run: swift test
       - name: Build
         run: swift build --configuration release
-      - name: Test
-        run: swift test --skip-build
       - name: Release
         uses: softprops/action-gh-release@v1
