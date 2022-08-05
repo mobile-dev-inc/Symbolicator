@@ -10,7 +10,7 @@ struct CrashReportSymbolicator: Symbolicator {
     }
     
     func getLoadAddress() -> String {
-        let regex = try! NSRegularExpression(pattern: #"\s*\d+\s+\#(appName)\s+0x\w+\s(\w+)\s+"#)
+        let regex = try! NSRegularExpression(pattern: #"\s*\d+\s+\S*\#(appName)\s+0x\w+\s(\w+)\s+"#)
 
         let range = NSRange(location: 0, length: swappedAppCrashFileContents.utf16.count)
         
