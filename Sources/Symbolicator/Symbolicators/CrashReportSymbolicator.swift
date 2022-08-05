@@ -9,13 +9,13 @@ struct CrashReportSymbolicator: Symbolicator {
         self.appName = appName
     }
     
-    func getLoadAddress() -> String {
+    func getLoadAddress() throws -> String {
         let regex = try! NSRegularExpression(pattern: #"\s*\d+\s+\S*\#(appName)\s+0x\w+\s(\w+)\s+"#)
 
         let range = NSRange(location: 0, length: swappedAppCrashFileContents.utf16.count)
         
         guard let match = regex.firstMatch(in: swappedAppCrashFileContents, range: range) else {
-            fatalError()
+            throw SymbolicatorAppError("Can't find appname \(appName)")
         }
         
         let matchRange = match.range(at: 1)
@@ -26,8 +26,8 @@ struct CrashReportSymbolicator: Symbolicator {
         return String(swappedAppCrashFileContents[start..<end])
     }
 
-    func getUnsymbolizedAddresses() -> [String] {
-        let loadAddress = getLoadAddress()
+    func getUnsymbolizedAddresses() throws -> [String] {
+        let loadAddress = try getLoadAddress()
         
         let regex0 = try! NSRegularExpression(pattern: #"\nThread"#)
         let fullStringRange = NSRange(location: 0, length: swappedAppCrashFileContents.utf16.count)

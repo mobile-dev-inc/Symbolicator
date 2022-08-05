@@ -49,7 +49,7 @@ struct SymbolicatorApp: ParsableCommand {
         if contents.contains("leaks Report Version") {
             try symbolicateMemoryLeakReport(contents)
         } else if contents.contains("Crashed Thread:") {
-            symbolicateLegacyCrashReport(contents)
+            try symbolicateLegacyCrashReport(contents)
         } else {
             throw SymbolicatorAppError("Unrecognised file format")
         }
@@ -60,7 +60,7 @@ struct SymbolicatorApp: ParsableCommand {
         if let dsymFile = dsymFile {
             let symbolicator = MemoryLeakReportSymbolicator(contents)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymFile, arch: arch)
-            result = runner.run(on: contents)
+            result = try runner.run(on: contents)
         } else {
             result = contents
         }
@@ -77,12 +77,11 @@ struct SymbolicatorApp: ParsableCommand {
         print(String(data: encoded, encoding: .utf8)!)
     }
 
-    fileprivate func symbolicateLegacyCrashReport(_ contents: String) {
+    fileprivate func symbolicateLegacyCrashReport(_ contents: String) throws {
         if let dsymFile = dsymFile {
             let appName = appName ?? "CrashReporter"
             let symbolicator = CrashReportSymbolicator(contents: contents, appName: appName)
             let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymFile, arch: arch)
-            let result = runner.run(on: symbolicator.swappedAppCrashFileContents)
             print(result)
         } else {
             print(contents)

@@ -17,7 +17,7 @@ final class CrashReportSymbolicatorTests: XCTestCase {
             dsymPath: TestResources().crashDsymUrl.appendingPathComponent("Contents/Resources/DWARF/CovidCertificateVerifier").path,
             arch: "x86_64")
         
-        let result = runner.run(on: contents)
+        let result = try runner.run(on: contents)
         
         XCTAssert(result.contains("0x000000010b8c0c40 AppDelegate.completedOnboarding() (in CovidCertificateVerifier) (AppDelegate.swift:122)"))
         XCTAssert(result.contains("0x000000010b8d9f2e VerificationState.wasRevocationSkipped.getter (in CovidCertificateVerifier) (Verifier.swift:108)"))

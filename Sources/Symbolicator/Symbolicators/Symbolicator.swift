@@ -1,6 +1,6 @@
 import Foundation
 
 protocol Symbolicator {
-    func getLoadAddress() -> String
-    func getUnsymbolizedAddresses() -> [String]
+    func getLoadAddress() throws -> String
+    func getUnsymbolizedAddresses() throws -> [String]
 }
