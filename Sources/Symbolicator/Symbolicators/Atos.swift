@@ -20,5 +20,5 @@ func atos(_ dsymPath: String,
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     let output = String(data: data, encoding: .utf8)!
     
-    return output
+    return output.trimmingCharacters(in: .newlines)
 }

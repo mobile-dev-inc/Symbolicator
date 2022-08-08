@@ -1,69 +1,64 @@
 import Foundation
 
 struct CrashReportSymbolicator: Symbolicator {
-    let appName: String
-    let swappedAppCrashFileContents: String
 
-    init(contents: String, appName: String) {
-        self.swappedAppCrashFileContents = contents.replacingOccurrences(of: "ReportCrash", with: appName)
-        self.appName = appName
-    }
-    
-    func getLoadAddress() throws -> String {
-        let regex = try! NSRegularExpression(pattern: #"\s*\d+\s+\S*\#(appName)\s+0x\w+\s(\w+)\s+"#)
+    var contents: Data
 
-        let range = NSRange(location: 0, length: swappedAppCrashFileContents.utf16.count)
-        
-        guard let match = regex.firstMatch(in: swappedAppCrashFileContents, range: range) else {
-            throw SymbolicatorAppError("Can't find appname \(appName)")
+    init?(_ contents: Data) {
+        let crashedThread = "Crashed Thread:".data(using: .utf8)!
+        if contents.range(of: crashedThread) == nil {
+            return nil
         }
-        
-        let matchRange = match.range(at: 1)
-        
-        let start = String.Index.init(utf16Offset: matchRange.lowerBound, in: swappedAppCrashFileContents)
-        let end = String.Index.init(utf16Offset: matchRange.upperBound, in: swappedAppCrashFileContents)
-        
-        return String(swappedAppCrashFileContents[start..<end])
+
+        self.contents = contents
     }
 
-    func getUnsymbolizedAddresses() throws -> [String] {
-        let loadAddress = try getLoadAddress()
-        
-        let regex0 = try! NSRegularExpression(pattern: #"\nThread"#)
-        let fullStringRange = NSRange(location: 0, length: swappedAppCrashFileContents.utf16.count)
-        guard let match0 = regex0.firstMatch(in: swappedAppCrashFileContents, range: fullStringRange) else {
-            fatalError()
+    mutating func setAppName(_ appName: String) {
+        let oldAppName = "ReportCrash"
+        let oldAppNameData = oldAppName.data(using: .utf8)!
+        while let range = contents.range(of: oldAppNameData) {
+            contents[range] = appName.data(using: .utf8)!
         }
-        
-        let regex1 = try! NSRegularExpression(pattern: #"Binary Images:"#)
-        guard let match1 = regex1.firstMatch(in: swappedAppCrashFileContents, range: fullStringRange) else {
-            fatalError()
-        }
-        
-        // Search after the headers and before the Binary Images
-        let range = NSRange(
-            location: match0.range.upperBound,
-            length: match1.range.lowerBound)
-        
-        // Mach: 0x6000024250e0
-        // But don't match: <LeakySwiftObject 0x6000024250e0>
-        let regex = try! NSRegularExpression(pattern: #"(0x[0-9a-fA-F]+) \#(loadAddress) +"#)
-        
-        let matches = regex.matches(
-            in: swappedAppCrashFileContents,
-            options: [],
-            range: range)
-                
-        let result = matches.map { match -> String in
-            let range = match.range(at: 1)
+    }
+
+    func stackFramesToSymbolize() -> [StackFrame] {
+        let contentsString = String(data: contents, encoding: .utf8)!
+
+        let start = contentsString.range(of: "\nThread")?.upperBound ?? contentsString.startIndex
+        let end = contentsString.range(of: "Binary Images:")?.lowerBound ?? contentsString.endIndex
+
+        return findUnsymbolicatedStackFramesInLegacyFormat(in: String(contentsString[start..<end]))
+    }
+
+    mutating func addSymbolsToStackFrames(_ stackFrames: [(StackFrame, String)]) {
+        for (address, symbol) in stackFrames {
+            let search = address.tag.data(using: .utf8)!
+            let a = "0x" + String(address.offset + address.base, radix: 16, uppercase: false)
+                .padLeft(toLength: 16, withPad: "0")
             
-            let start = String.Index.init(utf16Offset: range.lowerBound, in: swappedAppCrashFileContents)
-            let end = String.Index.init(utf16Offset: range.upperBound, in: swappedAppCrashFileContents)
-            
-            return String(swappedAppCrashFileContents[start..<end])
+            let replace = a + " " + symbol
+            let replaceData = replace.data(using: .utf8)!
+
+            while let range = contents.range(of: search) {
+                contents[range] = replaceData
+            }
         }
-        
-        return Array(Set(result))
+    }
+
+    var jsonContents: Data {
+        get throws {
+            throw SymbolicatorError("--json option is unsupported for crash reports")
+        }
     }
 }
 
+private extension String {
+    func padLeft(toLength: Int, withPad: String) -> String {
+        if count >= toLength {
+            return self
+        } else {
+            let padding = String(repeating: withPad, count: toLength - count)
+            return padding + self
+        }
+    }
+}
