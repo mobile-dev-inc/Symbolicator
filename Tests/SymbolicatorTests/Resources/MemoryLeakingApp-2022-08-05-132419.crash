@@ -1,0 +1,146 @@
+Process:               MemoryLeakingApp [8592]
+Path:                  /Users/USER/Library/Developer/CoreSimulator/Devices/B2C43E91-5A2B-471E-8CC6-4EBD9427F528/data/Containers/Bundle/Application/2F5F4C7C-C670-4057-BBBC-0DF283F871A1/MemoryLeakingApp.app/MemoryLeakingApp
+Identifier:            dev.mobile.MemoryLeakingApp
+Version:               1.0 (1)
+Code Type:             X86-64 (Native)
+Parent Process:        launchd_sim [7423]
+Responsible:           SimulatorTrampoline [606]
+User ID:               501
+
+Date/Time:             2022-08-05 13:24:19.116 +04:00
+OS Version:            macOS 12.4 (21F79)
+Report Version:        12
+Anonymous UUID:        C795E66C-FD5D-48F3-871C-3818D4AB6957
+
+Time Awake Since Boot: 5600 seconds
+
+System Integrity Protection: enabled
+
+Crashed Thread:        0  Dispatch queue: com.apple.main-thread
+
+Exception Type:        EXC_CRASH (SIGSEGV)
+Exception Codes:       0x0000000000000000, 0x0000000000000000
+Exception Note:        EXC_CORPSE_NOTIFY
+
+Thread 0 Crashed:: Dispatch queue: com.apple.main-thread
+0   libsystem_kernel.dylib            0x00007fff7017300e __pthread_kill + 10
+1   libsystem_pthread.dylib           0x00007fff701cb1ff pthread_kill + 263
+2   libsystem_c.dylib                 0x00000001082ed757 raise + 26
+3   dev.mobile.MemoryLeakingApp       0x00000001066482d2 0x106644000 + 17106
+4   dev.mobile.MemoryLeakingApp       0x0000000106649830 0x106644000 + 22576
+5   com.apple.SwiftUI                 0x000000011379e5eb partial apply for implicit closure #2 in implicit closure #1 in DefaultListButtonStyle.ListButton.body.getter + 17
+6   com.apple.SwiftUI                 0x00000001135c4a1e thunk for @escaping @callee_guaranteed () -> () + 12
+7   com.apple.SwiftUI                 0x0000000113707a13 partial apply for thunk for @escaping @callee_guaranteed () -> () + 17
+8   com.apple.SwiftUI                 0x00000001137085cb thunk for @escaping @callee_guaranteed () -> ()partial apply + 9
+9   com.apple.SwiftUI                 0x0000000113701055 specialized closure #2 in PlatformItemList.containerSelectionBehavior.getter + 53
+10  com.apple.SwiftUI                 0x0000000113d5bc25 UITableViewListCoordinator.tableView(_:didSelectRowAt:) + 545
+11  com.apple.SwiftUI                 0x0000000113d5c3bd @objc UITableViewListCoordinator.tableView(_:didSelectRowAt:) + 129
+12  com.apple.UIKitCore               0x000000012b5647be -[UITableView _selectRowAtIndexPath:animated:scrollPosition:notifyDelegate:isCellMultiSelect:deselectPrevious:] + 1962
+13  com.apple.UIKitCore               0x000000012b563ff9 -[UITableView _selectRowAtIndexPath:animated:scrollPosition:notifyDelegate:] + 94
+14  com.apple.UIKitCore               0x000000012b564a87 -[UITableView _userSelectRowAtPendingSelectionIndexPath:] + 341
+15  com.apple.UIKitCore               0x000000012b8751a9 -[_UIAfterCACommitBlock run] + 54
+16  com.apple.UIKitCore               0x000000012b8756a1 -[_UIAfterCACommitQueue flush] + 190
+17  com.apple.UIKitCore               0x000000012b322809 _runAfterCACommitDeferredBlocks + 782
+18  com.apple.UIKitCore               0x000000012b3120d9 _cleanUpAfterCAFlushAndRunDeferredBlocks + 135
+19  com.apple.UIKitCore               0x000000012b346612 _afterCACommitHandler + 72
+20  com.apple.CoreFoundation          0x0000000106a7f2f1 __CFRUNLOOP_IS_CALLING_OUT_TO_AN_OBSERVER_CALLBACK_FUNCTION__ + 23
+21  com.apple.CoreFoundation          0x0000000106a79ab5 __CFRunLoopDoObservers + 570
+22  com.apple.CoreFoundation          0x0000000106a7a04d __CFRunLoopRun + 1100
+23  com.apple.CoreFoundation          0x0000000106a79704 CFRunLoopRunSpecific + 562
+24  com.apple.GraphicsServices        0x0000000109f74c8e GSEventRunModal + 139
+25  com.apple.UIKitCore               0x000000012b31365a -[UIApplication _run] + 928
+26  com.apple.UIKitCore               0x000000012b3182b5 UIApplicationMain + 101
+27  com.apple.SwiftUI                 0x0000000113b88e5d closure #1 in KitRendererCommon(_:) + 196
+28  com.apple.SwiftUI                 0x0000000113b88d97 runApp<A>(_:) + 148
+29  com.apple.SwiftUI                 0x000000011354b854 static App.main() + 61
+30  dev.mobile.MemoryLeakingApp       0x0000000106646b0e 0x106644000 + 11022
+31  dyld_sim                          0x0000000106869f21 start_sim + 10
+32  dyld                              0x000000011305f51e start + 462
+
+Thread 1:: com.apple.uikit.eventfetch-thread
+0   libsystem_kernel.dylib            0x00007fff7016c97a mach_msg_trap + 10
+1   libsystem_kernel.dylib            0x00007fff7016cce8 mach_msg + 56
+2   com.apple.CoreFoundation          0x0000000106a7facc __CFRunLoopServiceMachPort + 319
+3   com.apple.CoreFoundation          0x0000000106a7a0e2 __CFRunLoopRun + 1249
+4   com.apple.CoreFoundation          0x0000000106a79704 CFRunLoopRunSpecific + 562
+5   com.apple.Foundation              0x00000001075f9049 -[NSRunLoop(NSRunLoop) runMode:beforeDate:] + 213
+6   com.apple.Foundation              0x00000001075f92c2 -[NSRunLoop(NSRunLoop) runUntilDate:] + 72
+7   com.apple.UIKitCore               0x000000012b3d6bda -[UIEventFetcher threadMain] + 491
+8   com.apple.Foundation              0x00000001076221a1 __NSThread__start__ + 1009
+9   libsystem_pthread.dylib           0x00007fff701cb4e1 _pthread_start + 125
+10  libsystem_pthread.dylib           0x00007fff701c6f6b thread_start + 15
+
+Thread 2:
+0   libsystem_pthread.dylib           0x00007fff701c6f48 start_wqthread + 0
+
+Thread 0 crashed with X86 Thread State (64-bit):
+  rax: 0x0000000000000000  rbx: 0x00000001130da600  rcx: 0x00007ff7b98b89c8  rdx: 0x0000000000000000
+  rdi: 0x0000000000000103  rsi: 0x000000000000000b  rbp: 0x00007ff7b98b89f0  rsp: 0x00007ff7b98b89c8
+   r8: 0x0000000000003300   r9: 0x0000000000000040  r10: 0x00000001130da600  r11: 0x0000000000000246
+  r12: 0x0000000000000103  r13: 0x0000000000000000  r14: 0x000000000000000b  r15: 0x0000000000000016
+  rip: 0x00007fff7017300e  rfl: 0x0000000000000246  cr2: 0x00007f9d66550000
+
+Logical CPU:     0
+Error Code:      02000148
+Trap Number:     133
+
+Binary Images:
+       0x106644000 -        0x10664c000 +dev.mobile.MemoryLeakingApp (1.0 - 1) <938A8C4A-3BE6-3A6B-865D-1E39ADBFA134> /Users/USER/Library/Developer/CoreSimulator/Devices/B2C43E91-5A2B-471E-8CC6-4EBD9427F528/data/Containers/Bundle/Application/2F5F4C7C-C670-4057-BBBC-0DF283F871A1/MemoryLeakingApp.app/MemoryLeakingApp
+       0x106868000 -        0x1068b6000 +dyld_sim (???) <7276A69B-E3B9-3F23-957F-061350A501B4> /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/usr/lib/dyld_sim
+       0x1069fe000 -        0x106e04000 com.apple.CoreFoundation (6.9 - 1863) <D7B873D0-2D44-362D-A632-91B54D2DD8C2> /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation
+       0x1074d5000 -        0x1077ca000 com.apple.Foundation (6.9 - 1863) <9827FA7D-2500-32D7-AAAF-288E38B126AB> /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/Frameworks/Foundation.framework/Foundation
+       0x1082dd000 -        0x108363000 +libsystem_c.dylib (???) <F6F40B31-302E-3596-97CC-50AE6CE0DC81> /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/usr/lib/system/libsystem_c.dylib
+       0x109f71000 -        0x109f7a000 com.apple.GraphicsServices (1.0 - 1.0) <D645C3C0-B4F8-31D0-BADA-02AEA61681D5> /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/GraphicsServices.framework/GraphicsServices
+       0x11305a000 -        0x1130c6000 dyld (???) <B70CE1EC-B902-3852-8268-05DE00BFA8D5> /usr/lib/dyld
+       0x113112000 -        0x113fb1000 com.apple.SwiftUI (3.5.2 - 3.5.2) <B0212EE6-E68A-3CA0-9949-D30E1A200779> /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/Frameworks/SwiftUI.framework/SwiftUI
+       0x12a638000 -        0x12bec7000 com.apple.UIKitCore (1.0 - 5612) <F710B655-42EE-3939-A3BD-6DA0F3758758> /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore
+    0x7fff7016b000 -     0x7fff701a3000 libsystem_kernel.dylib (???) <61711D11-E776-3BC3-B9A2-6F9F37CB8499> /usr/lib/system/libsystem_kernel.dylib
+    0x7fff701c5000 -     0x7fff701d1000 libsystem_pthread.dylib (???) <BC574849-1AAE-31E7-B350-916DDA999D97> /usr/lib/system/libsystem_pthread.dylib
+
+External Modification Summary:
+ Calls made by other processes targeting this process:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+ Calls made by this process:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+ Calls made by all processes on this machine:
+    task_for_pid: 0
+    thread_create: 0
+    thread_set_state: 0
+
+VM Region Summary:
+ReadOnly portion of Libraries: Total=1.1G resident=0K(0%) swapped_out_or_unallocated=1.1G(100%)
+Writable regions: Total=1.3G written=0K(0%) resident=0K(0%) swapped_out=0K(0%) unallocated=1.3G(100%)
+
+                                VIRTUAL   REGION 
+REGION TYPE                        SIZE    COUNT (non-coalesced) 
+===========                     =======  ======= 
+Activity Tracing                   256K        1 
+ColorSync                           24K        4 
+CoreAnimation                      168K       10 
+Foundation                          16K        1 
+Kernel Alloc Once                    8K        1 
+MALLOC                           351.6M       58 
+MALLOC guard page                   48K       11 
+MALLOC_MEDIUM (reserved)         600.0M        5         reserved VM address space (unallocated)
+MALLOC_NANO (reserved)           384.0M        1         reserved VM address space (unallocated)
+Performance tool data             16.1M        9         not counted in TOTAL below
+STACK GUARD                       56.0M        3 
+Stack                             9232K        3 
+VM_ALLOCATE                       1052K        4 
+__DATA                            15.4M      460 
+__DATA_CONST                      29.6M      359 
+__DATA_DIRTY                        44K       11 
+__FONT_DATA                          4K        1 
+__LINKEDIT                       750.1M      367 
+__TEXT                           387.7M      367 
+__UNICODE                          592K        1 
+dyld private memory               2048K        2 
+mapped file                      162.7M        9 
+shared memory                       16K        1 
+===========                     =======  ======= 
+TOTAL                              2.7G     1680 
+TOTAL, minus reserved VM space     1.7G     1680 

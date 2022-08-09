@@ -1,69 +1,51 @@
 import Foundation
 
 struct MemoryLeakReportSymbolicator: Symbolicator {
-    let memoryLeakReport: String
-    
-    init(_ memoryLeakReport: String) {
-        self.memoryLeakReport = memoryLeakReport
+
+    var contents: Data
+
+    init?(_ contents: Data) {
+        let leakReport = "leaks Report Version".data(using: .utf8)!
+        if contents.range(of: leakReport) == nil {
+            return nil
+        }
+        
+        self.contents = contents
     }
 
-    func getLoadAddress() -> String {
-        let regex = try! NSRegularExpression(pattern: #"Load Address:\s*(0x[0-9a-fA-F]+)\b"#)
-
-        let range = NSRange(location: 0, length: memoryLeakReport.utf16.count)
-        
-        guard let match = regex.firstMatch(in: memoryLeakReport, range: range) else {
-            fatalError()
+    mutating func setAppName(_ appName: String) {
+        let oldAppName = "ReportCrash"
+        let oldAppNameData = oldAppName.data(using: .utf8)!
+        while let range = contents.range(of: oldAppNameData) {
+            contents[range] = appName.data(using: .utf8)!
         }
-        
-        let matchRange = match.range(at: 1)
-        
-        let start = String.Index.init(utf16Offset: matchRange.lowerBound, in: memoryLeakReport)
-        let end = String.Index.init(utf16Offset: matchRange.upperBound, in: memoryLeakReport)
-        
-        return String(memoryLeakReport[start..<end])
     }
-    
-    func getUnsymbolizedAddresses() -> [String] {
-        let loadAddress = getLoadAddress()
-        
-        let memoryLeakReportRangeEnd = memoryLeakReport.endIndex.utf16Offset(in: memoryLeakReport)
-        let fullStringRange = NSRange(location: 0, length: memoryLeakReportRangeEnd)
 
-        let regex0 = try! NSRegularExpression(pattern: #"\n----\n"#)
-        guard let match0 = regex0.firstMatch(in: memoryLeakReport, range: fullStringRange) else {
-            fatalError()
+    func stackFramesToSymbolize() -> [StackFrame] {
+        let contentsString = String(data: contents, encoding: .utf8)!
+
+        let start = contentsString.range(of: "\n----\n")?.upperBound ?? contentsString.startIndex
+        let end = contentsString.range(of: "Binary Images:")?.lowerBound ?? contentsString.endIndex
+
+        return findUnsymbolicatedStackFramesInLegacyFormat(in: String(contentsString[start..<end]))
+    }
+
+    mutating func addSymbolsToStackFrames(_ stackFrames: [(StackFrame, String)]) {
+        for (address, symbol) in stackFrames {
+            let search = address.tag.data(using: .utf8)!
+            let replace = address.address + " " + symbol
+            let replaceData = replace.data(using: .utf8)!
+
+            while let range = contents.range(of: search) {
+                contents[range] = replaceData
+            }
         }
-        let location = match0.range.upperBound
-        
-        let length: Int
-        if let regex1 = try? NSRegularExpression(pattern: #"Binary Images:"#),
-            let match1 = regex1.firstMatch(in: memoryLeakReport, range: fullStringRange)  {
-            length = match1.range.lowerBound - location
-        } else {
-            length = memoryLeakReportRangeEnd - location
+    }
+
+    var jsonContents: Data {
+        get throws {
+            let report = try MemoryLeakReportParser().parse(String(data: contents, encoding: .utf8)!)
+            return try JSONEncoder().encode(report)
         }
-        
-        // Search after the headers and before the Binary Images
-        let range = NSRange(
-            location: location,
-            length: length)
-        
-        // Mach: 0x6000024250e0
-        // But don't match: <LeakySwiftObject 0x6000024250e0>
-        let regex = try! NSRegularExpression(pattern: #"(0x[0-9a-fA-F]+) \#(loadAddress) +"#)
-        
-        
-        let matches = regex.matches(
-            in: memoryLeakReport,
-            options: [],
-            range: range)
-                
-        let result = matches.map { match -> String in
-            let range = Range(match.range(at: 1), in: memoryLeakReport)!
-            return String(memoryLeakReport[range])
-        }
-        
-        return Array(Set(result))
     }
 }

@@ -1,5 +1,6 @@
 import Foundation
 import ArgumentParser
+import GenericJSON
 
 @main
 struct SymbolicatorApp: ParsableCommand {
@@ -18,74 +19,60 @@ struct SymbolicatorApp: ParsableCommand {
     @Flag(help: "JSON output")
     var json = false
     
-    mutating func run() throws {
-        printStderr("Symbolicator, arguments:")
-        printStderr("   dsym: \(dsymFile ?? "none")")
-        printStderr("   file: \(inputFileArgument)")
-        
+    func run() {
+        do {
+            try symbolicate()
+        } catch let error {
+            printStderr("Error:", error)
+            Foundation.exit(1)
+        }
+    }
+
+    func symbolicate() throws {
         let inputData: Data
         if inputFileArgument == "-" {
-            printStderr("Reading from stdin")
-            
             guard let data = try FileHandle.standardInput.readToEnd() else {
-                throw ReadError()
+                throw SymbolicatorError("Error reading from stdin")
             }
-            
+
             inputData = data
         } else {
             let url = URL(fileURLWithPath: inputFileArgument)
             guard FileManager().fileExists(atPath: inputFileArgument) else {
                 throw ValidationError("Input file not found at \(inputFileArgument)")
             }
-            
+
             inputData = try Data(contentsOf: url)
         }
 
+        let symbolicatorTypes: [Symbolicator.Type] = [
+            CrashReportSymbolicator.self,
+            MemoryLeakReportSymbolicator.self,
+            IPSSymbolicator.self
+        ]
 
-        parse(inputData)
-    }
-    
-    func parse(_ data: Data) {
-        guard let contents = String(data: data, encoding: .utf8) else { fatalError() }
-            
-        if contents.contains("leaks Report Version") {
-            let result: String
-            if let dsymFile = dsymFile {
-                let symbolicator = MemoryLeakReportSymbolicator(contents)
-                let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymFile, arch: arch)
-                result = runner.run(on: contents)
-            } else {
-                result = contents
-            }
-            
-            if json {
-                do {
-                    let report = try MemoryLeakReportParser().parse(result)
-                    let encoder = JSONEncoder()
-                    let encoded = try encoder.encode(report)
+        let applicableSymbolicators = symbolicatorTypes.compactMap { symbolicatorType in
+            symbolicatorType.init(inputData)
+        }
 
-                    print(String(data: encoded, encoding: .utf8)!)
-                    
-                } catch {
-                    printStderr("Failed to parse memory leak report \(error.localizedDescription)")
-                    printStderr(error)
-                }
-            } else {
-                print(result)
-            }
-            
-        } else if contents.contains("Crashed Thread:") {
-            if let dsymFile = dsymFile {
-                let appName = appName ?? "CrashReporter"
-                let symbolicator = CrashReportSymbolicator(contents: contents, appName: appName)
-                let runner = SymbolicatorRunner(symbolicator: symbolicator, dsymPath: dsymFile, arch: arch)
-                let result = runner.run(on: symbolicator.swappedAppCrashFileContents)
-                print(result)
-            } else {
-                print(contents)
-            }
+        guard applicableSymbolicators.count == 1 else {
+            throw SymbolicatorError("Expecting one symbolicator to match, found \(symbolicatorTypes.count)")
+        }
+
+        var symbolicator = applicableSymbolicators[0]
+
+        let stackFrames = try symbolicator.stackFramesToSymbolize()
+        if let dsymFile = dsymFile {
+            let atos = AddressToSymbol(dsymFile: dsymFile, arch: arch)
+            let symbolized = try atos.symbols(for: stackFrames)
+            symbolicator.addSymbolsToStackFrames(symbolized)
+        }
+
+        if json {
+            let jsonData = try symbolicator.jsonContents
+            try FileHandle.standardOutput.write(contentsOf: jsonData)
+        } else {
+            try FileHandle.standardOutput.write(contentsOf: symbolicator.contents)
         }
     }
 }
-
-struct ReadError: Error {}

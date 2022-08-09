@@ -10,6 +10,9 @@ class TestResources {
     let memoryLeakUnicodeUnsymbolicatedUrl = Bundle.module.url(forResource: "memory_leak_unicode_unsymbolicated", withExtension: "txt")!
     
     let dsymUrl = Bundle.module.url(forResource: "MemoryLeakingApp.app", withExtension: "dSYM")!
-    let nonSymbolicatedCrashUrl = Bundle.module.url(forResource: "non_symbolicated_crash", withExtension: "crash")!
+    let memoryLeakingAppCrash = Bundle.module.url(forResource: "MemoryLeakingApp-2022-08-05-132419", withExtension: "crash")!
+    let memoryLeakingAppIPS = Bundle.module.url(forResource: "MemoryLeakingApp-2022-08-05-132419", withExtension: "ips")!
+
     let crashDsymUrl = Bundle.module.url(forResource: "crash.app", withExtension: "dSYM")!
+    let nonSymbolicatedCrashUrl = Bundle.module.url(forResource: "non_symbolicated_crash", withExtension: "crash")!
 }

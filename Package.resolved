@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "generic-json-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/berikv/generic-json-swift",
+      "state" : {
+        "revision" : "b232005d5606d9e66949283f98bcab3e42e41aa0",
+        "version" : "2.1.0"
+      }
+    },
+    {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser",
