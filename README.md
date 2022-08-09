@@ -16,10 +16,10 @@ brew install symbolicator
 
 ```
 # Symbolicate a crash report
-symbolicator YourApp.crash --dsym YourApp.Dsym
+symbolicator YourApp.crash --dsym YourApp.dSYM
 
 # Symbolicate a memory leak
-leaks 1234 | symbolicator --dsym YourApp.Dsym -
+leaks 1234 | symbolicator --dsym YourApp.dSYM -
 
 # Parse the memory leak to json
 symbolicator --json memory_leak.txt
