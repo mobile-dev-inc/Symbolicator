@@ -1,11 +1,10 @@
 import XCTest
 import class Foundation.Bundle
 @testable import Symbolicator
-import Parsing
 
 final class CrashReportSymbolicatorTests: XCTestCase {
     func test() throws {
-        let dsymPath = TestResources().crashDsymUrl.appendingPathComponent("Contents/Resources/DWARF/CovidCertificateVerifier").path
+        let dsymFile = TestResources().crashDsymUrl.appendingPathComponent("Contents/Resources/DWARF/CovidCertificateVerifier").path
         let arch = "x86_64"
         let contents = try Data(contentsOf: TestResources().nonSymbolicatedCrashUrl)
 
@@ -13,11 +12,8 @@ final class CrashReportSymbolicatorTests: XCTestCase {
         symbolicator.setAppName("CovidCertificateVerifier")
 
         let stackFrames = symbolicator.stackFramesToSymbolize()
-        let symbolized = stackFrames.map { address -> (StackFrame, String) in
-            let symbol = try! atos(dsymPath, arch: arch, loadAddress: address.loadAddress, address: address.address)
-            return (address, symbol)
-        }
-
+        let atos = AddressToSymbol(dsymFile: dsymFile, arch: arch)
+        let symbolized = try atos.symbols(for: stackFrames)
         symbolicator.addSymbolsToStackFrames(symbolized)
 
         let result = String(data: symbolicator.contents, encoding: .utf8)!

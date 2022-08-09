@@ -4,7 +4,7 @@ import class Foundation.Bundle
 import Parsing
 
 final class MemoryLeakSymbolicatorTests: XCTestCase {
-    let dsymPath = TestResources().dsymUrl.appendingPathComponent("Contents/Resources/DWARF/MemoryLeakingApp").path
+    let dsymFile = TestResources().dsymUrl.appendingPathComponent("Contents/Resources/DWARF/MemoryLeakingApp").path
     let arch = "x86_64"
 
     func testNoBinaryImages() throws {
@@ -12,11 +12,8 @@ final class MemoryLeakSymbolicatorTests: XCTestCase {
         var symbolicator = MemoryLeakReportSymbolicator(contents)!
 
         let stackFrames = symbolicator.stackFramesToSymbolize()
-        let symbolized = stackFrames.map { address -> (StackFrame, String) in
-            let symbol = try! atos(dsymPath, arch: arch, loadAddress: address.loadAddress, address: address.address)
-            return (address, symbol)
-        }
-
+        let atos = AddressToSymbol(dsymFile: dsymFile, arch: arch)
+        let symbolized = try atos.symbols(for: stackFrames)
         symbolicator.addSymbolsToStackFrames(symbolized)
 
         let result = String(data: symbolicator.contents, encoding: .utf8)!
@@ -29,13 +26,10 @@ final class MemoryLeakSymbolicatorTests: XCTestCase {
         let contents = try Data(contentsOf: TestResources().memoryLeakUnsymbolicatedUrl)
         var symbolicator = MemoryLeakReportSymbolicator(contents)!
 
-        let addresses = symbolicator.stackFramesToSymbolize()
-        let stackFrames = addresses.map { address -> (StackFrame, String) in
-            let symbol = try! atos(dsymPath, arch: arch, loadAddress: address.loadAddress, address: address.address)
-            return (address, symbol)
-        }
-
-        symbolicator.addSymbolsToStackFrames(stackFrames)
+        let stackFrames = symbolicator.stackFramesToSymbolize()
+        let atos = AddressToSymbol(dsymFile: dsymFile, arch: arch)
+        let symbolized = try atos.symbols(for: stackFrames)
+        symbolicator.addSymbolsToStackFrames(symbolized)
 
         let result = String(data: symbolicator.contents, encoding: .utf8)!
 

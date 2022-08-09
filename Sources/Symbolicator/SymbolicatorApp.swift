@@ -62,12 +62,11 @@ struct SymbolicatorApp: ParsableCommand {
         var symbolicator = applicableSymbolicators[0]
 
         let stackFrames = try symbolicator.stackFramesToSymbolize()
-        let symbolized = stackFrames.map { address -> (StackFrame, String) in
-            let symbol = try! atos(dsymFile!, arch: arch, loadAddress: address.loadAddress, address: address.address)
-            return (address, symbol)
+        if let dsymFile = dsymFile {
+            let atos = AddressToSymbol(dsymFile: dsymFile, arch: arch)
+            let symbolized = try atos.symbols(for: stackFrames)
+            symbolicator.addSymbolsToStackFrames(symbolized)
         }
-
-        symbolicator.addSymbolsToStackFrames(symbolized)
 
         if json {
             let jsonData = try symbolicator.jsonContents
