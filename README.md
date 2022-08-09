@@ -1,3 +1,5 @@
+[![Run tests](https://github.com/mobile-dev-inc/Symbolicator/actions/workflows/test.yml/badge.svg)](https://github.com/mobile-dev-inc/Symbolicator/actions/workflows/test.yml)
+
 # Symbolicator
 
 The symbolicator util symbolicates memory leaks and crash reports.
