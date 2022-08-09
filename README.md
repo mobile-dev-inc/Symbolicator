@@ -2,13 +2,15 @@
 
 # Symbolicator
 
-The binary code of apps can contain symbol information. With symbol information it is possible look up the function name that belongs to a part of the executable code of the app binary.
+The binary code of apps can contain symbol information. With symbol information it is possible look up the function name, method name and / or file and line number belonging to a section of the app binary code.
 
 There is a compiler flag that removes this symbol information from the binary. In Xcode this flag is DEPLOYMENT_POSTPROCESSING called. When set to Yes, the compiler will remove the symbol information, resulting in a smaller binary.
-With the DEBUG_INFORMATION_FORMAT flag in the compiler can be told to save the symbol information to a separate file, the .Dsym file. 
+With the DEBUG_INFORMATION_FORMAT flag in the compiler can be told to save the symbol information to a separate file, the .dSYM file. 
 
-When an app is build with `DEPLOYMENT_POSTPROCESSING=Yes`, the crash reports and memory leak reports of the app will not contain method names belonging to the code inside the binary of the app (method names of linked libraries are displayed). Instead the addresses of inside the apps binary are shown in those reports.
-If the app was compiled with `DEBUG_INFORMATION_FORMAT=dwarf-with-dsym` then the .Dsym file can be used to translate those addresses back to method names using the `symbolicator` tool. 
+When an app is build with the flag `DEPLOYMENT_POSTPROCESSING=Yes`, the method names (called symbols) are not included in the app binary. Crash reports and memory leak reports from the app will not contain the app's method names (method names of linked libraries are displayed).
+In place of the method names, the address and "load address" of the binary code that was executed is shown instead. 
+
+If the app was compiled with `DEBUG_INFORMATION_FORMAT=dwarf-with-dsym` then the .dSYM file can be used to translate those addresses back to method names using the `symbolicator` tool. 
 
 ## Install
 
@@ -30,12 +32,7 @@ symbolicator --dsym YourApp.dSYM memory_leak.txt
 
 # Symbolicate a legacy crash report
 symbolicator YourApp.crash --dsym YourApp.dSYM
-
-# Parse the memory leak to json
-symbolicator --json memory_leak.txt
 ```
-
-When the `--json` flag is specified, symbolicator will attempt to parse the output and generate a JSON representation.
 
 ## Contributing
 
