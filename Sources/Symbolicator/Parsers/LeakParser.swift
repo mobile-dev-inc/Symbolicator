@@ -4,6 +4,13 @@ import Parsing
 struct LeakParser: Parser {
     func parse(_ input: inout Substring) throws -> Leak {
         try Parse {
+            // Do not parse the "leaks excluded" line as a leak
+            Not {
+                Whitespace()
+                Int.parser()
+                " leaks excluded"
+            }
+
             Optionally {
                 StackParser()
             }
