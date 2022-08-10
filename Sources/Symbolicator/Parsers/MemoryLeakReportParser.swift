@@ -21,7 +21,11 @@ struct MemoryLeakReportParser: Parser {
             Optionally {
                 Int.parser()
                 " leaks excluded"
-                Skip { PrefixThrough("\n\n\n") }
+                Skip {
+                    Optionally {
+                        PrefixThrough("\n\n\n")
+                    }
+                }
             }
 
             Optionally {
