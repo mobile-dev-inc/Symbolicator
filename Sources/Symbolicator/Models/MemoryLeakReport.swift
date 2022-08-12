@@ -6,10 +6,10 @@ struct MemoryLeakReport: Codable {
     let excludedLeakCount: Int
     let binaryImages: String?
 
-    init(headers: String, leaks: [Leak], excludedLinkCount: Int, binaryImages: String?) {
+    init(headers: String, leaks: [Leak], excludedLeakCount: Int, binaryImages: String?) {
         self.headers = headers
         self.leaks = leaks
-        self.excludedLeakCount = excludedLinkCount
+        self.excludedLeakCount = excludedLeakCount
         self.binaryImages = binaryImages
     }
 }

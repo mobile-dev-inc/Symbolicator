@@ -36,7 +36,7 @@ struct MemoryLeakReportParser: Parser {
             MemoryLeakReport(
                 headers: String($0.0.0) + String($0.0.1),
                 leaks: $0.1,
-                excludedLinkCount: $0.2 ?? 0,
+                excludedLeakCount: $0.2 ?? 0,
                 binaryImages: $0.3
             )
         }
