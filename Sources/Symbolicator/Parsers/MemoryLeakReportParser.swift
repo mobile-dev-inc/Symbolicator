@@ -4,26 +4,39 @@ import Parsing
 struct MemoryLeakReportParser: Parser {
     func parse(_ input: inout Substring) throws -> MemoryLeakReport {
         try Parse {
-            PrefixUpTo("\nleaks Report Version:").map { String($0) }
-            PrefixUpTo("\n\n").map { String($0) }
- 
-            Whitespace()
-            
+            Parse {
+                PrefixUpTo("\nleaks Report Version:")
+                PrefixUpTo("\n\n")
+
+                Whitespace()
+            }
+
             Many {
                 Not { "\n\n" }
                 LeakParser()
             }
             
             Whitespace()
-            
+
+            Optionally {
+                Int.parser()
+                " leaks excluded"
+                Skip {
+                    Optionally {
+                        PrefixThrough("\n\n\n")
+                    }
+                }
+            }
+
             Optionally {
                 Rest().map { String($0) }
             }
         }
         .map {
             MemoryLeakReport(
-                headers: $0.0 + $0.1,
-                leaks: $0.2,
+                headers: String($0.0.0) + String($0.0.1),
+                leaks: $0.1,
+                excludedLeakCount: $0.2 ?? 0,
                 binaryImages: $0.3
             )
         }

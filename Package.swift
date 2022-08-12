@@ -33,6 +33,7 @@ let package = Package(
                 .copy("Resources/memory_leak_unicode_unsymbolicated.txt"),
                 .copy("Resources/MemoryLeakingApp-2022-08-05-132419.crash"),
                 .copy("Resources/MemoryLeakingApp-2022-08-05-132419.ips"),
+                .copy("Resources/memory_leak_with_excludes.txt"),
             ]),
     ]
 )

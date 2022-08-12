@@ -113,5 +113,12 @@ final class MemoryLeakParserTests: XCTestCase {
         
         XCTAssert(report.binaryImages?.starts(with: "Binary Images:") ?? false)
     }
+
+    func test_with_excludes() throws {
+        let report = try parseFile(at: TestResources().memoryLeakWithExcludesUrl)
+
+        XCTAssertEqual(report.leaks.count, 1)
+        XCTAssertEqual(report.excludedLeakCount, 56)
+    }
 }
 

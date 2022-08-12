@@ -8,6 +8,7 @@ class TestResources {
     let memoryLeakWithStacktraceUrl = Bundle.module.url(forResource: "memory_leak_with_stacktrace", withExtension: "txt")!
     let memoryLeakWithSymbolicatedStacktraceUrl = Bundle.module.url(forResource: "memory_leak_with_symbolicated_stacktrace", withExtension: "txt")!
     let memoryLeakUnicodeUnsymbolicatedUrl = Bundle.module.url(forResource: "memory_leak_unicode_unsymbolicated", withExtension: "txt")!
+    let memoryLeakWithExcludesUrl = Bundle.module.url(forResource: "memory_leak_with_excludes", withExtension: "txt")!
     
     let dsymUrl = Bundle.module.url(forResource: "MemoryLeakingApp.app", withExtension: "dSYM")!
     let memoryLeakingAppCrash = Bundle.module.url(forResource: "MemoryLeakingApp-2022-08-05-132419", withExtension: "crash")!
