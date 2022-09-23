@@ -1,6 +1,6 @@
 import Foundation
 
-struct MemoryLeakReportSymbolicator: Symbolicator {
+struct MemoryLeakReportSymbolicator: SymbolicatorProtocol {
 
     var contents: Data
 

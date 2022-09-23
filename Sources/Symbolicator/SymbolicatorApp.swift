@@ -3,7 +3,7 @@ import ArgumentParser
 import GenericJSON
 
 @main
-struct SymbolicatorApp: ParsableCommand {
+struct Symbolicator: ParsableCommand {
     @Argument(help: "Input file")
     var inputFileArgument: String
     
@@ -45,7 +45,7 @@ struct SymbolicatorApp: ParsableCommand {
             inputData = try Data(contentsOf: url)
         }
 
-        let symbolicatorTypes: [Symbolicator.Type] = [
+        let symbolicatorTypes: [SymbolicatorProtocol.Type] = [
             CrashReportSymbolicator.self,
             MemoryLeakReportSymbolicator.self,
             IPSSymbolicator.self

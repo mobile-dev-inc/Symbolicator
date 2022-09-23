@@ -1,6 +1,6 @@
 import Foundation
 
-struct CrashReportSymbolicator: Symbolicator {
+struct CrashReportSymbolicator: SymbolicatorProtocol {
 
     var contents: Data
 
