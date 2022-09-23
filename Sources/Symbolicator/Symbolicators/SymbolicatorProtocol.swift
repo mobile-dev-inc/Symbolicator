@@ -1,6 +1,6 @@
 import Foundation
 
-protocol Symbolicator {
+protocol SymbolicatorProtocol {
 
     var contents: Data { get }
     var jsonContents: Data { get throws }

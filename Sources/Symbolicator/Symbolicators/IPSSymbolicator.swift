@@ -5,7 +5,7 @@ private let newline = Character("\n").asciiValue!
 private let curlyOpen = Character("{").asciiValue!
 private let curlyClose = Character("}").asciiValue!
 
-struct IPSSymbolicator: Symbolicator {
+struct IPSSymbolicator: SymbolicatorProtocol {
 
     private(set) var header: JSON
     private(set) var body: JSON

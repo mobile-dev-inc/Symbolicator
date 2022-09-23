@@ -24,14 +24,14 @@ brew install symbolicator
 
 ```
 # Symbolicate a crash report
-symbolicator YourApp.ips --dsym YourApp.dSYM
+symbolicator --dsym YourApp.dSYM YourApp.ips
 
 # Symbolicate a memory leak
 leaks [process id] > memory_leak.txt
 symbolicator --dsym YourApp.dSYM memory_leak.txt
 
 # Symbolicate a legacy crash report
-symbolicator YourApp.crash --dsym YourApp.dSYM
+symbolicator --dsym YourApp.dSYM YourApp.crash
 ```
 
 ## Contributing

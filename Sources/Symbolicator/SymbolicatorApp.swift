@@ -3,12 +3,12 @@ import ArgumentParser
 import GenericJSON
 
 @main
-struct SymbolicatorApp: ParsableCommand {
+struct Symbolicator: ParsableCommand {
     @Argument(help: "Input file")
     var inputFileArgument: String
     
     @Option(help: "Dsym file, will attempt to symbolize if passed")
-    var dsymFile: String?
+    var dsym: String?
 
     @Option(help: "App name")
     var appName: String?
@@ -45,7 +45,7 @@ struct SymbolicatorApp: ParsableCommand {
             inputData = try Data(contentsOf: url)
         }
 
-        let symbolicatorTypes: [Symbolicator.Type] = [
+        let symbolicatorTypes: [SymbolicatorProtocol.Type] = [
             CrashReportSymbolicator.self,
             MemoryLeakReportSymbolicator.self,
             IPSSymbolicator.self
@@ -62,8 +62,8 @@ struct SymbolicatorApp: ParsableCommand {
         var symbolicator = applicableSymbolicators[0]
 
         let stackFrames = try symbolicator.stackFramesToSymbolize()
-        if let dsymFile = dsymFile {
-            let atos = AddressToSymbol(dsymFile: dsymFile, arch: arch)
+        if let dsym = dsym {
+            let atos = AddressToSymbol(dsymFile: dsym, arch: arch)
             let symbolized = try atos.symbols(for: stackFrames)
             symbolicator.addSymbolsToStackFrames(symbolized)
         }
